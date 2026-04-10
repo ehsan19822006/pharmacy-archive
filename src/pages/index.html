@@ -4,422 +4,688 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نظام الأرشفة الإلكترونية — كلية الصيدلة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
-body{background:#f5f5f0;color:#1a1a1a;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.titlebar{height:32px;background:#1a1a2e;display:flex;align-items:center;padding:0 12px;-webkit-app-region:drag;flex-shrink:0}
-.titlebar-title{color:#fff;font-size:12px;opacity:.8}
+:root {
+  --navy: #0a1628;
+  --navy2: #0f2040;
+  --navy3: #162952;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --gold3: #f5dfa0;
+  --teal: #0d7a6b;
+  --teal2: #0fa892;
+  --cyan: #00d4aa;
+  --red: #e53e3e;
+  --orange: #dd6b20;
+  --green: #38a169;
+  --gray: #718096;
+  --light: #f7f8fc;
+  --white: #ffffff;
+  --border: rgba(201,168,76,0.2);
+  --shadow: 0 4px 24px rgba(0,0,0,0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--light);color:var(--navy);min-height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── Top Bar ── */
+.topbar{height:52px;background:var(--navy);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;border-bottom:2px solid var(--gold)}
+.tb-logo{display:flex;align-items:center;gap:10px}
+.tb-emblem{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tb-name{color:var(--gold2);font-size:13px;font-weight:600;line-height:1.3}
+.tb-sub{color:rgba(255,255,255,.45);font-size:10px}
+.tb-divider{width:1px;height:28px;background:var(--border);margin:0 4px}
+.tb-nav{display:flex;gap:2px;flex:1;margin:0 12px}
+.tb-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;border:none;background:transparent;transition:all .2s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.tb-btn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9)}
+.tb-btn.active{background:rgba(201,168,76,.15);color:var(--gold2);border-bottom:2px solid var(--gold)}
+.tb-actions{display:flex;gap:8px;margin-right:auto}
+.btn-gold{padding:7px 16px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-outline{padding:7px 14px;background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.scanner-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(13,122,107,.25);border:1px solid rgba(13,122,107,.4);border-radius:20px;font-size:11px;color:#4dd8c8}
+.scanner-dot{width:6px;height:6px;border-radius:50%;background:#4dd8c8;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Layout ── */
 .app{display:flex;flex:1;overflow:hidden}
 
-/* Sidebar */
-.sidebar{width:200px;background:#16213e;display:flex;flex-direction:column;flex-shrink:0}
-.logo{padding:16px 12px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center}
-.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#0f3460,#533483);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:20px}
-.logo-name{color:#fff;font-size:12px;font-weight:600;line-height:1.4}
-.logo-sub{color:rgba(255,255,255,.5);font-size:10px;margin-top:2px}
-.nav-section{padding:12px 10px 4px;font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6);margin:1px 6px;border-radius:8px;transition:all .15s}
-.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
-.nav-item.active{background:rgba(99,153,34,.2);color:#7dd35a}
-.nav-item .ni{font-size:15px;width:18px;text-align:center}
-.nav-badge{margin-right:auto;background:rgba(55,138,221,.3);color:#85b7eb;font-size:10px;padding:1px 6px;border-radius:10px}
-.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.08)}
-.scanner-status{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.5)}
-.dot{width:7px;height:7px;border-radius:50%;background:#639922;flex-shrink:0;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ── Sidebar ── */
+.sidebar{width:220px;background:var(--navy2);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-section{padding:14px 12px 4px;font-size:9px;font-weight:700;color:rgba(201,168,76,.5);letter-spacing:.12em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 8px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:500;color:rgba(255,255,255,.5);transition:all .18s;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.sb-item.active{background:rgba(201,168,76,.12);color:var(--gold2)}
+.sb-item.active::before{content:'';position:absolute;right:0;top:20%;height:60%;width:3px;background:var(--gold);border-radius:3px 0 0 3px}
+.sb-icon{font-size:15px;width:20px;text-align:center;opacity:.8}
+.sb-badge{margin-right:auto;background:rgba(201,168,76,.2);color:var(--gold);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
+.sb-badge.red{background:rgba(229,62,62,.2);color:#fc8181}
+.sb-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border)}
+.storage-bar{height:4px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin:6px 0 4px}
+.storage-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));border-radius:4px;width:42%}
 
-/* Main */
+/* ── Main ── */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{padding:12px 16px;background:#fff;border-bottom:1px solid #e5e5e0;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.topbar-title{font-size:15px;font-weight:600;color:#1a1a1a;flex:1}
-.btn{padding:7px 14px;font-size:12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn:hover{background:#f5f5f0;border-color:#bbb}
-.btn-primary{background:#16213e;color:#fff;border-color:#16213e}
-.btn-primary:hover{background:#0f3460}
-.btn-scan{background:#0f6e56;color:#fff;border-color:#0f6e56}
-.btn-scan:hover{background:#085041}
-.content{flex:1;overflow-y:auto;padding:16px}
+.page-header{padding:16px 20px;background:var(--white);border-bottom:1px solid #e8edf5;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ph-title{font-size:16px;font-weight:700;color:var(--navy)}
+.ph-sub{font-size:11px;color:var(--gray);margin-top:1px}
+.ph-actions{margin-right:auto;display:flex;gap:8px}
+.content{flex:1;overflow-y:auto;padding:20px;background:var(--light)}
 
-/* Pages */
+/* ── Pages ── */
 .page{display:none}
-.page.active{display:block}
+.page.show{display:block}
 
-/* Stats */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e0}
-.stat-label{font-size:11px;color:#888;margin-bottom:4px}
-.stat-val{font-size:24px;font-weight:700;color:#1a1a1a}
-.stat-sub{font-size:10px;color:#639922;margin-top:2px}
-.stat-card.blue .stat-val{color:#185fa5}
-.stat-card.green .stat-val{color:#0f6e56}
-.stat-card.amber .stat-val{color:#854f0b}
-.stat-card.purple .stat-val{color:#534ab7}
+/* ── KPI Cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--white);border-radius:var(--radius);padding:18px 20px;border:1px solid #e8edf5;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0}
+.kpi-label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.kpi-val{font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:4px}
+.kpi-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.07}
 
-/* Cards */
-.card{background:#fff;border-radius:10px;border:1px solid #e8e8e0;overflow:hidden;margin-bottom:12px}
-.card-header{padding:12px 16px;border-bottom:1px solid #e8e8e0;display:flex;align-items:center;gap:8px;background:#fafaf8}
-.card-title{font-size:13px;font-weight:600;flex:1}
+/* ── Cards ── */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;overflow:hidden;margin-bottom:16px}
+.card-head{padding:14px 18px;border-bottom:1px solid #f0f3f9;display:flex;align-items:center;gap:10px}
+.card-title{font-size:13px;font-weight:700;color:var(--navy);flex:1}
+.card-body{padding:0}
 
-/* Table */
+/* ── Table ── */
+.tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{padding:8px 12px;text-align:right;color:#888;font-weight:500;font-size:11px;border-bottom:1px solid #e8e8e0;background:#fafaf8}
-td{padding:9px 12px;border-bottom:1px solid #f0f0e8;color:#1a1a1a}
+th{padding:10px 14px;text-align:right;font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;background:#f8fafc;border-bottom:2px solid #e8edf5;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid #f0f3f9;color:var(--navy);vertical-align:middle}
 tr:last-child td{border:none}
-tr:hover td{background:#f8f8f4;cursor:pointer}
-.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
-.p-shahada{background:#e6f1fb;color:#0c447c}
-.p-qaboul{background:#eaf3de;color:#27500a}
-.p-idari{background:#faeeda;color:#633806}
-.p-bahth{background:#eeedfe;color:#3c3489}
-.p-aqd{background:#faece7;color:#712b13}
-.p-done{background:#eaf3de;color:#27500a}
-.p-new{background:#e6f1fb;color:#0c447c}
+tr:hover td{background:#fafcff;cursor:pointer}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pill-shahada{background:#dbeafe;color:#1e40af}
+.pill-qaboul{background:#dcfce7;color:#15803d}
+.pill-idari{background:#fef3c7;color:#92400e}
+.pill-bahth{background:#ede9fe;color:#6d28d9}
+.pill-aqd{background:#fee2e2;color:#991b1b}
+.pill-done{background:#d1fae5;color:#065f46}
+.pill-pending{background:#fef3c7;color:#92400e}
+.pill-new{background:#dbeafe;color:#1e40af}
+.pill-dean{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border:1px solid #fcd34d}
+.pill-admin{background:#dbeafe;color:#1e40af}
+.pill-faculty{background:#dcfce7;color:#15803d}
+.pill-student{background:#ede9fe;color:#6d28d9}
+.avatar{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-left:8px;vertical-align:middle;flex-shrink:0}
+.row-actions{display:flex;gap:6px}
+.act-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid #e2e8f0;background:#fff;color:var(--navy);cursor:pointer;font-family:inherit;transition:all .15s}
+.act-btn:hover{border-color:var(--navy);background:var(--navy);color:#fff}
+.act-btn.danger:hover{border-color:var(--red);background:var(--red);color:#fff}
 
-/* Scanner */
-.scan-wizard{display:grid;grid-template-columns:280px 1fr;gap:12px}
-.scanner-box{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;flex-direction:column;gap:12px}
-.device-header{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0f6e56}
-.scan-area{border:2px dashed #ddd;border-radius:8px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s;background:#fafaf8}
-.scan-area:hover{border-color:#0f6e56}
-.scan-area.scanning{border-color:#0f6e56;border-style:solid}
-.scan-beam{position:absolute;left:0;right:0;height:2px;background:#0f6e56;top:0;display:none;animation:scanBeam 1s linear infinite}
-@keyframes scanBeam{0%{top:0}100%{top:100%}}
-.scan-icon{font-size:32px}
-.scan-text{font-size:11px;color:#888}
-.prog-bar{height:4px;background:#e8e8e0;border-radius:4px;overflow:hidden}
-.prog-fill{height:100%;background:#0f6e56;border-radius:4px;width:0;transition:width .2s}
-.field{display:flex;flex-direction:column;gap:3px}
-.field label{font-size:11px;color:#888;font-weight:500}
-.field select,.field input{padding:7px 10px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
-.field select:focus,.field input:focus{border-color:#0f6e56}
+/* ── Scanner Page ── */
+.scan-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+.scanner-card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;overflow:hidden}
+.scanner-head{background:linear-gradient(135deg,var(--navy),var(--navy3));padding:16px;display:flex;align-items:center;gap:10px}
+.sh-icon{width:38px;height:38px;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:18px}
+.sh-title{color:var(--gold2);font-size:13px;font-weight:600}
+.sh-status{color:rgba(255,255,255,.5);font-size:10px;margin-top:1px}
+.scanner-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.scan-preview{border:2px dashed #d1dce8;border-radius:var(--radius);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;background:#f8fafc}
+.scan-preview:hover{border-color:var(--teal);background:#f0fdf9}
+.scan-preview.scanning{border-color:var(--teal2);border-style:solid;background:#f0fdf9}
+.scan-preview.done{border-color:var(--green);border-style:solid;background:#f0fdf9}
+.scan-beam{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal2),transparent);top:0;display:none;animation:beam 1.2s ease-in-out infinite}
+@keyframes beam{0%{top:0;opacity:1}100%{top:100%;opacity:.3}}
+.scan-preview-icon{font-size:36px;transition:all .3s}
+.scan-preview-text{font-size:11px;color:var(--gray);font-weight:500}
+.prog-track{height:5px;background:#e8edf5;border-radius:5px;overflow:hidden}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));border-radius:5px;width:0;transition:width .25s}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}
+.fld select,.fld input{padding:8px 10px;font-size:12px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);background:#fff;color:var(--navy);font-family:inherit;outline:none;transition:border-color .2s}
+.fld select:focus,.fld input:focus{border-color:var(--teal2)}
+.btn-scan{padding:11px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;width:100%}
+.btn-scan:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-scan:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
 /* OCR Panel */
-.ocr-result-panel{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;flex-direction:column;gap:10px}
-.ocr-text-box{background:#fafaf8;border:1px solid #e8e8e0;border-radius:8px;padding:10px;font-size:11px;color:#555;min-height:80px;line-height:1.8;white-space:pre-line}
-.classify-steps{display:flex;flex-direction:column;gap:6px}
-.cs-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid #e8e8e0;font-size:11px;transition:all .3s}
-.cs-item.done{border-color:#b8dba0;background:#f0fae8;color:#27500a}
-.cs-item.active{border-color:#85b7eb;background:#eaf4ff;color:#0c447c}
-.cs-item .cs-icon{font-size:14px;width:18px;text-align:center}
-.cs-item .cs-val{margin-right:auto;font-weight:600;font-size:10px}
-.result-success{background:#f0fae8;border:1px solid #b8dba0;border-radius:8px;padding:14px;display:none;flex-direction:column;gap:6px}
-.result-success.show{display:flex}
-.result-path{font-family:monospace;font-size:11px;background:rgba(99,153,34,.1);padding:5px 8px;border-radius:6px;color:#27500a}
+.ocr-card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;overflow:hidden}
+.ocr-head{background:linear-gradient(135deg,var(--navy),var(--navy3));padding:14px 16px;display:flex;align-items:center;gap:8px}
+.ocr-title{color:var(--gold2);font-size:13px;font-weight:600;flex:1}
+.steps-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px}
+.step{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);border:1.5px solid #e8edf5;font-size:11px;font-weight:600;color:var(--gray);transition:all .3s}
+.step.active{border-color:#93c5fd;background:#eff6ff;color:#1e40af}
+.step.done{border-color:#86efac;background:#f0fdf4;color:#15803d}
+.step-icon{font-size:16px;width:22px;text-align:center}
+.step-val{font-size:9px;font-weight:700;margin-right:auto;padding:2px 6px;border-radius:8px}
+.step.done .step-val{background:#dcfce7;color:#15803d}
+.step.active .step-val{background:#dbeafe;color:#1e40af}
+.ocr-text-area{margin:0 14px 14px;padding:12px;background:#f8fafc;border-radius:var(--radius-sm);font-size:11px;color:#555;line-height:1.9;min-height:90px;white-space:pre-line;border:1px solid #e8edf5;font-family:inherit}
+.result-box{margin:0 14px 14px;padding:14px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:var(--radius);display:none;flex-direction:column;gap:8px}
+.result-box.show{display:flex}
+.result-title{font-size:14px;font-weight:700;color:#15803d;display:flex;align-items:center;gap:6px}
+.result-path{font-family:monospace;font-size:10px;background:rgba(21,128,61,.1);padding:6px 10px;border-radius:6px;color:#15803d;word-break:break-all}
+.save-row{padding:14px;border-top:1px solid #f0f3f9;display:flex;gap:8px}
+.btn-save{flex:1;padding:11px;background:linear-gradient(135deg,var(--navy),var(--navy3));color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-save:hover{filter:brightness(1.15)}
+.btn-save:disabled{opacity:.4;cursor:not-allowed}
+.btn-reset{padding:11px 16px;background:#fff;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;color:var(--gray);font-family:inherit;transition:all .2s}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
 
 /* Search */
-.search-wrap{position:relative;flex:1}
-.search-wrap input{width:100%;padding:7px 10px 7px 30px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
-.search-wrap input:focus{border-color:#16213e}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px}
-.filter-row{display:flex;gap:5px}
-.ftab{padding:4px 12px;font-size:11px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;white-space:nowrap}
-.ftab.on{background:#16213e;color:#fff;border-color:#16213e}
+.search-box{position:relative;flex:1;max-width:280px}
+.search-box input{width:100%;padding:8px 12px 8px 32px;font-size:12px;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-family:inherit;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--teal2)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9aa5b1;font-size:14px;pointer-events:none}
+.filter-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.ftab{padding:5px 12px;font-size:11px;font-weight:600;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;color:var(--gray);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.ftab:hover{border-color:var(--navy);color:var(--navy)}
+.ftab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
-/* Profile */
-.profile-header{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:12px}
-.ph-avatar{width:56px;height:56px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#0c447c;flex-shrink:0}
-.ph-name{font-size:16px;font-weight:700}
-.ph-id{font-size:12px;color:#888;margin-top:2px}
-.ph-stats{margin-right:auto;display:flex;gap:20px;text-align:center}
-.ph-stat-val{font-size:20px;font-weight:700;color:#16213e}
-.ph-stat-label{font-size:10px;color:#888}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.ic-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0e8;font-size:12px}
+/* Student Profile */
+.profile-wrap{display:grid;grid-template-columns:1fr 320px;gap:16px}
+.profile-main{display:flex;flex-direction:column;gap:14px}
+.profile-card{background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:rgba(201,168,76,.2);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--gold2);flex-shrink:0}
+.profile-name{font-size:18px;font-weight:700;color:#fff}
+.profile-id{font-size:12px;color:rgba(255,255,255,.55);margin-top:3px}
+.profile-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.profile-stats{margin-right:auto;display:flex;gap:24px;text-align:center}
+.ps-val{font-size:22px;font-weight:700;color:var(--gold2)}
+.ps-label{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;padding:16px}
+.ic-title{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #f0f3f9;display:flex;align-items:center;gap:6px}
+.ic-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f8fafc;font-size:12px}
 .ic-row:last-child{border:none}
-.ic-key{color:#888}
-.ic-val{font-weight:600}
+.ic-key{color:var(--gray)}
+.ic-val{font-weight:600;color:var(--navy)}
+.gpa-bar-wrap{margin-top:6px}
+.gpa-track{height:6px;background:#e8edf5;border-radius:6px;overflow:hidden;margin:4px 0}
+.gpa-fill{height:100%;border-radius:6px}
+
+/* Reports */
+.reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.chart-card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;padding:18px}
+.chart-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px}
+.hbar{display:flex;flex-direction:column;gap:10px}
+.hbar-row{display:flex;align-items:center;gap:10px}
+.hbar-label{font-size:11px;color:var(--gray);width:110px;text-align:right;flex-shrink:0}
+.hbar-track{flex:1;height:18px;background:#f0f3f9;border-radius:4px;overflow:hidden;position:relative}
+.hbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-right:8px;justify-content:flex-end;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.hbar-num{font-size:11px;font-weight:700;color:#fff;position:absolute;left:8px;top:50%;transform:translateY(-50%)}
+.activity-feed{display:flex;flex-direction:column;gap:0}
+.af-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f3f9}
+.af-item:last-child{border:none}
+.af-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.af-content{flex:1}
+.af-text{font-size:12px;color:var(--navy);line-height:1.5}
+.af-time{font-size:10px;color:var(--gray);margin-top:2px}
+
+/* Users */
+.roles-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.role-card{background:var(--white);border-radius:var(--radius);border:1.5px solid #e8edf5;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.role-card:hover,.role-card.on{border-color:var(--gold);background:linear-gradient(135deg,#fffbeb,#fef3c7)}
+.rc-icon{font-size:26px;margin-bottom:6px}
+.rc-name{font-size:12px;font-weight:700;color:var(--navy)}
+.rc-count{font-size:10px;color:var(--gray);margin-top:3px}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:var(--white);border-radius:var(--radius);width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-head{background:linear-gradient(135deg,var(--navy),var(--navy3));padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.modal-title{color:var(--gold2);font-size:14px;font-weight:700}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;line-height:1;padding:0}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:12px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{padding:16px 20px;border-top:1px solid #f0f3f9;display:flex;gap:8px;justify-content:flex-end}
+.btn-primary{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-primary:hover{background:var(--navy3)}
+.btn-secondary{padding:9px 16px;background:#fff;border:1.5px solid #e2e8f0;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;color:var(--gray);font-family:inherit;transition:all .2s}
+.btn-secondary:hover{border-color:var(--navy);color:var(--navy)}
 
 /* Toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16213e;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
-.toast.show{opacity:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:var(--radius);font-size:12px;font-weight:500;z-index:200;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(134,239,172,.4);background:linear-gradient(135deg,#065f46,#047857)}
+.toast.error{border-color:rgba(252,165,165,.4);background:linear-gradient(135deg,#991b1b,#b91c1c)}
+
+/* Empty state */
+.empty{padding:40px;text-align:center;color:var(--gray)}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.4}
+.empty-text{font-size:13px;font-weight:500}
+.empty-sub{font-size:11px;margin-top:4px}
+
+/* Settings */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.setting-card{background:var(--white);border-radius:var(--radius);border:1px solid #e8edf5;padding:18px}
+.sc-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #f0f3f9}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1dce8;border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:#9aa5b1}
 </style>
 </head>
 <body>
 
-<div class="titlebar">
-  <div class="titlebar-title">نظام الأرشفة الإلكترونية — كلية الصيدلة</div>
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="tb-logo">
+    <div class="tb-emblem">⚗</div>
+    <div>
+      <div class="tb-name">كلية الصيدلة</div>
+      <div class="tb-sub">جامعة البصرة</div>
+    </div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-nav">
+    <button class="tb-btn active" onclick="nav('dashboard',this)">◈ لوحة التحكم</button>
+    <button class="tb-btn" onclick="nav('scan',this)">🖨 المسح والأرشفة</button>
+    <button class="tb-btn" onclick="nav('archive',this)">📂 الأرشيف</button>
+    <button class="tb-btn" onclick="nav('students',this)">🎓 الطلاب</button>
+    <button class="tb-btn" onclick="nav('users',this)">👥 المستخدمون</button>
+    <button class="tb-btn" onclick="nav('reports',this)">📊 التقارير</button>
+    <button class="tb-btn" onclick="nav('settings',this)">⚙ الإعدادات</button>
+  </div>
+  <div class="tb-actions">
+    <div class="scanner-pill" id="scanner-pill">
+      <span class="scanner-dot" id="scanner-dot"></span>
+      <span id="scanner-label">جاري الاتصال...</span>
+    </div>
+    <button class="btn-gold" onclick="nav('scan',document.querySelector('.tb-btn:nth-child(2)'))">🖨 مسح جديد</button>
+    <button class="btn-outline" onclick="showToast('جاري تصدير التقرير...','')">تصدير ↗</button>
+  </div>
 </div>
 
 <div class="app">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">⚗</div>
-      <div class="logo-name">كلية الصيدلة</div>
-      <div class="logo-sub">جامعة البصرة</div>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sb-section">الملفات</div>
+  <div class="sb-item active" onclick="nav('dashboard',null,this)"><span class="sb-icon">◈</span>لوحة التحكم</div>
+  <div class="sb-item" onclick="nav('scan',null,this)"><span class="sb-icon">🖨</span>المسح الضوئي<span class="sb-badge">جديد</span></div>
+  <div class="sb-item" onclick="nav('archive',null,this)"><span class="sb-icon">📂</span>الأرشيف<span class="sb-badge" id="sb-archive-count">0</span></div>
+  <div class="sb-item" onclick="nav('students',null,this)"><span class="sb-icon">🎓</span>ملفات الطلاب</div>
+  <div class="sb-section">الإدارة</div>
+  <div class="sb-item" onclick="nav('users',null,this)"><span class="sb-icon">👥</span>المستخدمون</div>
+  <div class="sb-item" onclick="nav('reports',null,this)"><span class="sb-icon">📊</span>التقارير</div>
+  <div class="sb-section">النظام</div>
+  <div class="sb-item" onclick="nav('settings',null,this)"><span class="sb-icon">⚙</span>الإعدادات</div>
+  <div class="sb-footer">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px">التخزين المستخدم</div>
+    <div class="storage-bar"><div class="storage-fill"></div></div>
+    <div style="font-size:10px;color:rgba(255,255,255,.4)">4.2 GB من 20 GB</div>
+    <div style="font-size:10px;color:rgba(201,168,76,.6);margin-top:10px">النسخة 2.0 — كلية الصيدلة</div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+<div class="content">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page show" id="page-dashboard">
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-accent" style="background:linear-gradient(90deg,#1e40af,#3b82f6)"></div>
+      <div class="kpi-label">إجمالي الوثائق</div>
+      <div class="kpi-val" style="color:#1e40af" id="kpi-docs">0</div>
+      <div class="kpi-sub" style="color:#3b82f6">وثيقة مؤرشفة</div>
+      <div class="kpi-icon">📄</div>
     </div>
-
-    <div class="nav-section">الرئيسية</div>
-    <div class="nav-item active" data-page="dashboard"><span class="ni">◈</span>لوحة التحكم</div>
-    <div class="nav-item" data-page="scan"><span class="ni">🖨</span>مسح وأرشفة<span class="nav-badge">جديد</span></div>
-
-    <div class="nav-section">الملفات</div>
-    <div class="nav-item" data-page="archive"><span class="ni">📂</span>الأرشيف<span class="nav-badge" id="nb-archive">0</span></div>
-    <div class="nav-item" data-page="students"><span class="ni">🎓</span>ملفات الطلاب</div>
-    <div class="nav-item" data-page="users"><span class="ni">👥</span>المستخدمون</div>
-
-    <div class="nav-section">النظام</div>
-    <div class="nav-item" data-page="reports"><span class="ni">📊</span>التقارير</div>
-    <div class="nav-item" data-page="settings"><span class="ni">⚙</span>الإعدادات</div>
-
-    <div class="sidebar-bottom">
-      <div class="scanner-status">
-        <span class="dot"></span>
-        <span id="scanner-status-text">جاري الاتصال...</span>
-      </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:linear-gradient(90deg,#065f46,#10b981)"></div>
+      <div class="kpi-label">الصفحات الممسوحة</div>
+      <div class="kpi-val" style="color:#065f46" id="kpi-pages">0</div>
+      <div class="kpi-sub" style="color:#10b981">صفحة إجمالية</div>
+      <div class="kpi-icon">📋</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:linear-gradient(90deg,#92400e,#f59e0b)"></div>
+      <div class="kpi-label">ملفات الطلاب</div>
+      <div class="kpi-val" style="color:#92400e" id="kpi-students">0</div>
+      <div class="kpi-sub" style="color:#f59e0b">طالب مسجّل</div>
+      <div class="kpi-icon">🎓</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:linear-gradient(90deg,#6d28d9,#a78bfa)"></div>
+      <div class="kpi-label">وثائق اليوم</div>
+      <div class="kpi-val" style="color:#6d28d9" id="kpi-today">0</div>
+      <div class="kpi-sub" style="color:#a78bfa">أُرشفت اليوم</div>
+      <div class="kpi-icon">📅</div>
     </div>
   </div>
 
-  <!-- Main -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-title" id="topbar-title">لوحة التحكم</div>
-      <button class="btn btn-scan" onclick="navigate('scan')">🖨 مسح وثيقة جديدة</button>
-      <button class="btn btn-primary" onclick="exportReport()">تصدير التقرير</button>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📋 آخر الوثائق المؤرشفة</div>
+        <button class="act-btn" onclick="nav('archive',null)">عرض الكل</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>اسم الوثيقة</th><th>النوع</th><th>مرتبط بـ</th><th>الصفحات</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+          <tbody id="dash-docs-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="content">
+    <div class="card">
+      <div class="card-head"><div class="card-title">📊 توزيع الوثائق</div></div>
+      <div style="padding:14px" id="dash-chart"></div>
+    </div>
+  </div>
+</div>
 
-      <!-- Dashboard -->
-      <div class="page active" id="page-dashboard">
-        <div class="stats-grid">
-          <div class="stat-card blue">
-            <div class="stat-label">إجمالي الوثائق</div>
-            <div class="stat-val" id="s-total">0</div>
-            <div class="stat-sub">وثيقة مؤرشفة</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">إجمالي الصفحات</div>
-            <div class="stat-val" id="s-pages">0</div>
-            <div class="stat-sub">صفحة ممسوحة</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-label">ملفات الطلاب</div>
-            <div class="stat-val" id="s-students">0</div>
-            <div class="stat-sub">طالب مسجل</div>
-          </div>
-          <div class="stat-card purple">
-            <div class="stat-label">بانتظار المعالجة</div>
-            <div class="stat-val" id="s-pending">0</div>
-            <div class="stat-sub">وثيقة معلقة</div>
-          </div>
+<!-- ═══ SCAN ═══ -->
+<div class="page" id="page-scan">
+  <div class="scan-layout">
+    <div class="scanner-card">
+      <div class="scanner-head">
+        <div class="sh-icon">🖨</div>
+        <div>
+          <div class="sh-title" id="scan-device-name">Canon DR Series</div>
+          <div class="sh-status" id="scan-device-status">جاري البحث عن السكانر...</div>
         </div>
+      </div>
+      <div class="scanner-body">
+        <div class="scan-preview" id="scan-preview" onclick="startScan()">
+          <div class="scan-beam" id="scan-beam"></div>
+          <div class="scan-preview-icon" id="scan-icon">🖨</div>
+          <div class="scan-preview-text" id="scan-txt">اضغط لبدء المسح الضوئي</div>
+        </div>
+        <div class="prog-track"><div class="prog-bar" id="prog-bar"></div></div>
+        <div style="font-size:11px;color:var(--gray);text-align:center" id="prog-label">— / — صفحات</div>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📋 آخر الوثائق المؤرشفة</div>
-            <button class="btn" onclick="navigate('archive')">عرض الكل</button>
+        <div class="fld">
+          <label>جهاز السكانر</label>
+          <select id="device-sel">
+            <option value="demo">🖨 سكانر تجريبي</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>جودة المسح</label>
+          <select id="dpi-sel">
+            <option value="150">150 DPI — سريع</option>
+            <option value="300" selected>300 DPI — قياسي ✓</option>
+            <option value="600">600 DPI — أرشيف عالي</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>نوع الوثيقة (أو سيُحدد تلقائياً)</label>
+          <select id="doc-type-sel">
+            <option value="">🤖 تحديد تلقائي بالذكاء الاصطناعي</option>
+            <option value="shahada">📜 شهادة / درجات</option>
+            <option value="qaboul">📝 قبول / تسجيل</option>
+            <option value="idari">📋 وثيقة إدارية</option>
+            <option value="bahth">🔬 بحث / رسالة</option>
+            <option value="aqd">📄 عقد / اتفاقية</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>ربط بطالب / موظف</label>
+          <input type="text" id="link-input" placeholder="ابحث بالاسم أو الرقم...">
+        </div>
+        <button class="btn-scan" id="scan-btn" onclick="startScan()">▶ بدء المسح الضوئي</button>
+      </div>
+    </div>
+
+    <div class="ocr-card">
+      <div class="ocr-head">
+        <div class="ocr-title">⚡ قراءة وتصنيف تلقائي بالذكاء الاصطناعي</div>
+      </div>
+      <div class="steps-grid">
+        <div class="step" id="step1"><span class="step-icon">⏸</span><span>مسح ضوئي</span><span class="step-val" id="sv1"></span></div>
+        <div class="step" id="step2"><span class="step-icon">⏸</span><span>قراءة النص OCR</span><span class="step-val" id="sv2"></span></div>
+        <div class="step" id="step3"><span class="step-icon">⏸</span><span>تحديد النوع</span><span class="step-val" id="sv3"></span></div>
+        <div class="step" id="step4"><span class="step-icon">⏸</span><span>استخراج الاسم</span><span class="step-val" id="sv4"></span></div>
+        <div class="step" id="step5"><span class="step-icon">⏸</span><span>تحديد المجلد</span><span class="step-val" id="sv5"></span></div>
+        <div class="step" id="step6"><span class="step-icon">⏸</span><span>الحفظ التلقائي</span><span class="step-val" id="sv6"></span></div>
+      </div>
+      <div style="padding:0 14px;margin-bottom:8px;font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em">النص المستخرج:</div>
+      <div class="ocr-text-area" id="ocr-text">في انتظار المسح الضوئي...</div>
+      <div class="result-box" id="result-box">
+        <div class="result-title">✅ تمت الأرشفة بنجاح!</div>
+        <div style="font-size:11px;color:#065f46">تم حفظ الوثيقة وربطها تلقائياً في:</div>
+        <div class="result-path" id="result-path"></div>
+        <button class="btn-scan" onclick="resetScan()" style="background:linear-gradient(135deg,#065f46,#047857);margin-top:4px">+ مسح وثيقة أخرى</button>
+      </div>
+      <div class="save-row">
+        <button class="btn-save" id="save-btn" onclick="saveDoc()" disabled>💾 حفظ وأرشفة</button>
+        <button class="btn-reset" onclick="resetScan()">↺ إعادة تعيين</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ARCHIVE ═══ -->
+<div class="page" id="page-archive">
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">📂 الأرشيف الإلكتروني الكامل</div>
+      <div class="filter-tabs" id="archive-filters">
+        <button class="ftab on" onclick="setFilter('all',this)">الكل</button>
+        <button class="ftab" onclick="setFilter('shahada',this)">شهادات</button>
+        <button class="ftab" onclick="setFilter('qaboul',this)">قبول</button>
+        <button class="ftab" onclick="setFilter('idari',this)">إدارية</button>
+        <button class="ftab" onclick="setFilter('bahth',this)">أبحاث</button>
+        <button class="ftab" onclick="setFilter('aqd',this)">عقود</button>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="بحث في الأرشيف..." oninput="renderArchive(this.value)">
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>اسم الوثيقة</th><th>النوع</th>
+          <th>مسار الحفظ</th><th>مرتبط بـ</th>
+          <th>الصفحات</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th>
+        </tr></thead>
+        <tbody id="archive-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENTS ═══ -->
+<div class="page" id="page-students">
+  <div style="display:flex;gap:14px;align-items:flex-start">
+    <div style="flex:1">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <div class="card-title">🎓 سجل الطلاب</div>
+          <div class="search-box">
+            <span class="search-icon">⌕</span>
+            <input type="text" placeholder="بحث بالاسم أو الرقم الأكاديمي..." oninput="renderStudents(this.value)">
           </div>
+          <button class="btn-gold" onclick="showStudentModal()" style="font-size:11px;padding:6px 12px">+ إضافة طالب</button>
+        </div>
+        <div class="tbl-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>اسم الوثيقة</th>
-                <th>النوع</th>
-                <th>مرتبط بـ</th>
-                <th>الصفحات</th>
-                <th>التاريخ</th>
-              </tr>
-            </thead>
-            <tbody id="recent-tbody">
-              <tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق بعد — ابدأ بمسح وثيقة جديدة</td></tr>
-            </tbody>
+            <thead><tr><th>الرقم</th><th>الاسم الكامل</th><th>القسم</th><th>المرحلة</th><th>المعدل</th><th>الحالة</th><th>الوثائق</th></tr></thead>
+            <tbody id="students-tbody"></tbody>
           </table>
         </div>
       </div>
-
-      <!-- Scanner Page -->
-      <div class="page" id="page-scan">
-        <div class="scan-wizard">
-          <div class="scanner-box">
-            <div class="device-header">🖨 السكانر — <span id="device-name">جاري البحث...</span></div>
-
-            <div class="scan-area" id="scan-area" onclick="startScan()">
-              <div class="scan-beam" id="scan-beam"></div>
-              <div class="scan-icon" id="scan-icon">🖨</div>
-              <div class="scan-text" id="scan-text">اضغط لبدء المسح</div>
-            </div>
-
-            <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
-            <div style="font-size:11px;color:#888;text-align:center" id="prog-label">— / — صفحات</div>
-
-            <div class="field">
-              <label>الجهاز</label>
-              <select id="device-select"><option value="demo">سكانر تجريبي</option></select>
-            </div>
-            <div class="field">
-              <label>جودة المسح</label>
-              <select id="dpi-select">
-                <option value="200">200 DPI — معاينة</option>
-                <option value="300" selected>300 DPI — قياسي</option>
-                <option value="600">600 DPI — أرشيف</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>نوع الوثيقة</label>
-              <select id="doc-type-select">
-                <option value="">— سيُحدد تلقائياً —</option>
-                <option value="shahada">شهادة / درجات</option>
-                <option value="qaboul">قبول / تسجيل</option>
-                <option value="idari">وثيقة إدارية</option>
-                <option value="bahth">بحث / رسالة</option>
-                <option value="aqd">عقد / اتفاقية</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>ربط بـ (اختياري)</label>
-              <input type="text" id="link-name" placeholder="اسم الطالب أو الجهة">
-            </div>
-
-            <button class="btn btn-scan" style="width:100%" onclick="startScan()">▶ بدء المسح الضوئي</button>
-          </div>
-
-          <div class="ocr-result-panel">
-            <div style="font-size:13px;font-weight:600">⚙ النص المستخرج والتصنيف التلقائي</div>
-
-            <div class="classify-steps">
-              <div class="cs-item" id="cs1"><span class="cs-icon">⏸</span><span>مسح الوثيقة ضوئياً</span><span class="cs-val" id="cv1"></span></div>
-              <div class="cs-item" id="cs2"><span class="cs-icon">⏸</span><span>قراءة النص (OCR)</span><span class="cs-val" id="cv2"></span></div>
-              <div class="cs-item" id="cs3"><span class="cs-icon">⏸</span><span>تحديد نوع الوثيقة</span><span class="cs-val" id="cv3"></span></div>
-              <div class="cs-item" id="cs4"><span class="cs-icon">⏸</span><span>استخراج اسم الشخص</span><span class="cs-val" id="cv4"></span></div>
-              <div class="cs-item" id="cs5"><span class="cs-icon">⏸</span><span>حفظ في المجلد المناسب</span><span class="cs-val" id="cv5"></span></div>
-            </div>
-
-            <div style="font-size:11px;font-weight:500;color:#888">النص المستخرج:</div>
-            <div class="ocr-text-box" id="ocr-text-box">في انتظار المسح...</div>
-
-            <div class="result-success" id="result-success">
-              <div style="font-size:14px;font-weight:700;color:#27500a">✅ تمت الأرشفة بنجاح!</div>
-              <div style="font-size:12px;color:#555">تم حفظ الوثيقة في:</div>
-              <div class="result-path" id="result-path"></div>
-              <button class="btn btn-primary" onclick="resetScan()" style="margin-top:4px">مسح وثيقة أخرى</button>
-            </div>
-
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-primary" style="flex:1" onclick="saveDoc()" id="save-btn" disabled>💾 حفظ وأرشفة</button>
-              <button class="btn" onclick="resetScan()">↺ إعادة تعيين</button>
-            </div>
-          </div>
+    </div>
+    <div style="width:300px" id="student-profile-panel">
+      <div class="card">
+        <div style="padding:20px;text-align:center;color:var(--gray)">
+          <div style="font-size:40px;opacity:.3;margin-bottom:8px">🎓</div>
+          <div style="font-size:12px">اختر طالباً لعرض ملفه</div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <!-- Archive Page -->
-      <div class="page" id="page-archive">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📂 الأرشيف الكامل</div>
-            <div class="filter-row">
-              <button class="ftab on" onclick="setFilter('all',this)">الكل</button>
-              <button class="ftab" onclick="setFilter('shahada',this)">شهادات</button>
-              <button class="ftab" onclick="setFilter('qaboul',this)">قبول</button>
-              <button class="ftab" onclick="setFilter('idari',this)">إدارية</button>
-              <button class="ftab" onclick="setFilter('bahth',this)">أبحاث</button>
-              <button class="ftab" onclick="setFilter('aqd',this)">عقود</button>
-            </div>
-            <div class="search-wrap" style="max-width:200px">
-              <span class="search-icon">⌕</span>
-              <input type="text" placeholder="بحث..." oninput="loadArchive(this.value)">
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:30%">اسم الوثيقة</th>
-                <th style="width:15%">النوع</th>
-                <th style="width:20%">المسار</th>
-                <th style="width:15%">مرتبط بـ</th>
-                <th style="width:8%">صفحات</th>
-                <th style="width:12%">التاريخ</th>
-              </tr>
-            </thead>
-            <tbody id="archive-tbody">
-              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق</td></tr>
-            </tbody>
-          </table>
-        </div>
+<!-- ═══ USERS ═══ -->
+<div class="page" id="page-users">
+  <div class="roles-strip">
+    <div class="role-card on" onclick="setRoleFilter('all',this)">
+      <div class="rc-icon">👥</div>
+      <div class="rc-name">الكل</div>
+      <div class="rc-count" id="rc-all">0 مستخدم</div>
+    </div>
+    <div class="role-card" onclick="setRoleFilter('dean',this)">
+      <div class="rc-icon">👑</div>
+      <div class="rc-name">العميد</div>
+      <div class="rc-count" id="rc-dean">1 مستخدم</div>
+    </div>
+    <div class="role-card" onclick="setRoleFilter('admin',this)">
+      <div class="rc-icon">🖥</div>
+      <div class="rc-name">إداري</div>
+      <div class="rc-count" id="rc-admin">5 مستخدمين</div>
+    </div>
+    <div class="role-card" onclick="setRoleFilter('faculty',this)">
+      <div class="rc-icon">🎓</div>
+      <div class="rc-name">هيئة تدريس</div>
+      <div class="rc-count" id="rc-faculty">8 أعضاء</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">👥 قائمة المستخدمين</div>
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="بحث..." oninput="renderUsers(this.value)">
       </div>
+      <button class="btn-gold" onclick="showUserModal()" style="font-size:11px;padding:6px 12px">+ إضافة مستخدم</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>المستخدم</th><th>الدور</th><th>القسم</th><th>آخر دخول</th><th>الحالة</th><th>إجراء</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-      <!-- Students Page -->
-      <div class="page" id="page-students">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🎓 ملفات الطلاب</div>
-            <div class="search-wrap" style="max-width:220px">
-              <span class="search-icon">⌕</span>
-              <input type="text" placeholder="بحث بالاسم أو الرقم..." oninput="loadStudents(this.value)">
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>الرقم الأكاديمي</th>
-                <th>الاسم</th>
-                <th>القسم</th>
-                <th>المرحلة</th>
-                <th>المعدل</th>
-                <th>الوثائق</th>
-              </tr>
-            </thead>
-            <tbody id="students-tbody">
-              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد طلاب مسجلون</td></tr>
-            </tbody>
-          </table>
-        </div>
+<!-- ═══ REPORTS ═══ -->
+<div class="page" id="page-reports">
+  <div class="kpi-grid" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#1e40af,#3b82f6)"></div><div class="kpi-label">هذا الأسبوع</div><div class="kpi-val" style="color:#1e40af" id="r-week">0</div><div class="kpi-sub">وثيقة مضافة</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#065f46,#10b981)"></div><div class="kpi-label">هذا الشهر</div><div class="kpi-val" style="color:#065f46" id="r-month">0</div><div class="kpi-sub">وثيقة مضافة</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#92400e,#f59e0b)"></div><div class="kpi-label">إجمالي الصفحات</div><div class="kpi-val" style="color:#92400e" id="r-pages">0</div><div class="kpi-sub">صفحة ممسوحة</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#6d28d9,#a78bfa)"></div><div class="kpi-label">معدل الأرشفة</div><div class="kpi-val" style="color:#6d28d9" id="r-avg">0</div><div class="kpi-sub">دقيقة / وثيقة</div></div>
+  </div>
+  <div class="reports-grid">
+    <div class="chart-card">
+      <div class="chart-title">📊 توزيع الوثائق حسب النوع</div>
+      <div class="hbar" id="reports-hbar"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🕐 آخر النشاطات</div>
+      <div class="activity-feed" id="activity-feed"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">📋 تقرير تفصيلي</div>
+      <button class="btn-gold" onclick="showToast('جاري تصدير التقرير بصيغة PDF...','')" style="font-size:11px;padding:6px 12px">تصدير PDF</button>
+      <button class="act-btn" onclick="showToast('جاري تصدير Excel...','')">Excel</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>نوع الوثيقة</th><th>الإجمالي</th><th>هذا الشهر</th><th>الصفحات</th><th>نسبة من الكل</th></tr></thead>
+        <tbody id="report-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="page" id="page-settings">
+  <div class="settings-grid">
+    <div class="setting-card">
+      <div class="sc-title">📁 إعدادات الأرشيف</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="fld"><label>مسار حفظ الأرشيف</label><input type="text" value="C:\PharmacyArchive" id="st-path"></div>
+        <div class="fld"><label>مسار النسخ الاحتياطي</label><input type="text" value="C:\PharmacyArchive\Backup" id="st-backup"></div>
+        <div class="fld"><label>جودة المسح الافتراضية</label><select><option value="300" selected>300 DPI</option><option value="600">600 DPI</option></select></div>
       </div>
-
-      <!-- Users Page -->
-      <div class="page" id="page-users">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">👥 إدارة المستخدمين</div>
-            <button class="btn btn-primary" onclick="showAddUser()">+ إضافة مستخدم</button>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>الاسم</th>
-                <th>اسم المستخدم</th>
-                <th>الدور</th>
-                <th>القسم</th>
-                <th>الحالة</th>
-                <th>آخر دخول</th>
-              </tr>
-            </thead>
-            <tbody id="users-tbody">
-              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">جاري التحميل...</td></tr>
-            </tbody>
-          </table>
-        </div>
+    </div>
+    <div class="setting-card">
+      <div class="sc-title">🖨 إعدادات السكانر</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="fld"><label>الجهاز الافتراضي</label><select id="st-scanner"><option>Canon DR-C225W</option><option>أي سكانر متاح</option></select></div>
+        <div class="fld"><label>لغة OCR</label><select><option>عربي + إنجليزي</option><option>عربي فقط</option><option>إنجليزي فقط</option></select></div>
+        <div class="fld"><label>التصنيف التلقائي</label><select><option>مفعّل</option><option>معطّل</option></select></div>
       </div>
-
-      <!-- Reports Page -->
-      <div class="page" id="page-reports">
-        <div class="stats-grid">
-          <div class="stat-card blue"><div class="stat-label">وثائق هذا الشهر</div><div class="stat-val" id="r-month">0</div></div>
-          <div class="stat-card green"><div class="stat-label">صفحات ممسوحة</div><div class="stat-val" id="r-pages">0</div></div>
-          <div class="stat-card amber"><div class="stat-label">طلاب مؤرشف لهم</div><div class="stat-val" id="r-students">0</div></div>
-          <div class="stat-card purple"><div class="stat-label">إجمالي الوثائق</div><div class="stat-val" id="r-total">0</div></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">📊 توزيع الوثائق حسب النوع</div></div>
-          <div style="padding:16px" id="reports-chart"></div>
-        </div>
+    </div>
+    <div class="setting-card">
+      <div class="sc-title">🏛 معلومات المؤسسة</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="fld"><label>اسم الكلية</label><input type="text" value="كلية الصيدلة"></div>
+        <div class="fld"><label>اسم الجامعة</label><input type="text" value="جامعة البصرة"></div>
+        <div class="fld"><label>العام الدراسي</label><input type="text" value="2024 / 2025"></div>
       </div>
-
-      <!-- Settings Page -->
-      <div class="page" id="page-settings">
-        <div class="card">
-          <div class="card-header"><div class="card-title">⚙ إعدادات النظام</div></div>
-          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-            <div class="field"><label>مسار الأرشيف الرئيسي</label><input type="text" id="archive-path" placeholder="C:\PharmacyArchive"></div>
-            <div class="field"><label>اسم المؤسسة</label><input type="text" id="college-name" value="كلية الصيدلة — جامعة البصرة"></div>
-            <div class="field"><label>جودة المسح الافتراضية</label>
-              <select id="default-dpi"><option value="200">200 DPI</option><option value="300" selected>300 DPI</option><option value="600">600 DPI</option></select>
-            </div>
-            <button class="btn btn-primary" style="align-self:flex-start" onclick="saveSettings()">حفظ الإعدادات</button>
-          </div>
-        </div>
+    </div>
+    <div class="setting-card">
+      <div class="sc-title">🔒 الأمان</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="fld"><label>مهلة الجلسة</label><select><option>30 دقيقة</option><option>60 دقيقة</option><option>لا تنتهي</option></select></div>
+        <div class="fld"><label>تشفير قاعدة البيانات</label><select><option>مفعّل ✓</option><option>معطّل</option></select></div>
+        <div class="fld"><label>النسخ الاحتياطي التلقائي</label><select><option>يومياً</option><option>أسبوعياً</option></select></div>
       </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;display:flex;gap:8px">
+    <button class="btn-primary" onclick="showToast('✓ تم حفظ الإعدادات بنجاح','success')">حفظ الإعدادات</button>
+    <button class="btn-secondary" onclick="showToast('جاري إنشاء نسخة احتياطية...','')">نسخة احتياطية الآن</button>
+  </div>
+</div>
 
+</div><!-- content -->
+</div><!-- main -->
+</div><!-- app -->
+
+<!-- Modal: Add User -->
+<div class="modal-bg" id="user-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">إضافة مستخدم جديد</div>
+      <button class="modal-close" onclick="closeModal('user-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="fld" style="grid-column:1/-1"><label>الاسم الكامل</label><input type="text" id="u-name" placeholder="د. أحمد محمد السالم"></div>
+        <div class="fld"><label>اسم المستخدم</label><input type="text" id="u-username" placeholder="ahmed.salem"></div>
+        <div class="fld"><label>كلمة المرور</label><input type="password" id="u-pass" placeholder="••••••••"></div>
+        <div class="fld"><label>الدور</label><select id="u-role"><option value="admin">موظف إداري</option><option value="faculty">هيئة تدريس</option><option value="student">طالب</option><option value="dean">عميد</option></select></div>
+        <div class="fld"><label>القسم</label><input type="text" id="u-dept" placeholder="شؤون الطلاب"></div>
+        <div class="fld" style="grid-column:1/-1"><label>البريد الإلكتروني</label><input type="email" id="u-email" placeholder="user@pharmacy.edu.iq"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('user-modal')">إلغاء</button>
+      <button class="btn-primary" onclick="addUser()">إضافة المستخدم</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Student -->
+<div class="modal-bg" id="student-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">إضافة طالب جديد</div>
+      <button class="modal-close" onclick="closeModal('student-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="fld" style="grid-column:1/-1"><label>الاسم الكامل</label><input type="text" id="st-name" placeholder="أحمد محمد الحسن"></div>
+        <div class="fld"><label>الرقم الأكاديمي</label><input type="text" id="st-code" placeholder="2024-PH-001"></div>
+        <div class="fld"><label>القسم</label><select id="st-dept"><option>صيدلة سريرية</option><option>كيمياء صيدلانية</option><option>صيدلة مجتمعية</option><option>صيدلة إكلينيكية</option></select></div>
+        <div class="fld"><label>المرحلة الدراسية</label><select id="st-year"><option>الأولى</option><option>الثانية</option><option>الثالثة</option><option>الرابعة</option><option>خريج</option></select></div>
+        <div class="fld"><label>المعدل التراكمي</label><input type="number" id="st-gpa" placeholder="3.75" step="0.01" min="0" max="4"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('student-modal')">إلغاء</button>
+      <button class="btn-primary" onclick="addStudent()">إضافة الطالب</button>
     </div>
   </div>
 </div>
@@ -427,351 +693,517 @@ tr:hover td{background:#f8f8f4;cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script>
-const docTypes={
-  shahada:{label:'شهادة/درجات',folder:'شهادات_ودرجات',pilClass:'p-shahada'},
-  qaboul: {label:'قبول/تسجيل', folder:'قبول_وتسجيل',  pilClass:'p-qaboul'},
-  idari:  {label:'إدارية',      folder:'وثائق_إدارية',  pilClass:'p-idari'},
-  bahth:  {label:'بحث/رسالة',  folder:'أبحاث_ورسائل',  pilClass:'p-bahth'},
-  aqd:    {label:'عقد',         folder:'عقود_واتفاقيات', pilClass:'p-aqd'},
-  other:  {label:'أخرى',        folder:'وثائق_أخرى',    pilClass:'p-idari'},
+// ═══ DATA ═══
+const docTypes = {
+  shahada:{label:'شهادة/درجات',folder:'شهادات_ودرجات',pill:'pill-shahada',color:'#1e40af'},
+  qaboul:{label:'قبول/تسجيل',folder:'قبول_وتسجيل',pill:'pill-qaboul',color:'#15803d'},
+  idari:{label:'إدارية',folder:'وثائق_إدارية',pill:'pill-idari',color:'#92400e'},
+  bahth:{label:'بحث/رسالة',folder:'أبحاث_ورسائل',pill:'pill-bahth',color:'#6d28d9'},
+  aqd:{label:'عقد/اتفاقية',folder:'عقود_واتفاقيات',pill:'pill-aqd',color:'#991b1b'},
+  other:{label:'أخرى',folder:'وثائق_أخرى',pill:'pill-idari',color:'#92400e'},
+}
+const roleMap = {dean:{l:'👑 العميد',p:'pill-dean'},admin:{l:'🖥 إداري',p:'pill-admin'},faculty:{l:'🎓 تدريس',p:'pill-faculty'},student:{l:'📚 طالب',p:'pill-student'}}
+const avatarColors = ['#dbeafe','#dcfce7','#fef3c7','#ede9fe','#fee2e2','#d1fae5']
+const avatarTextColors = ['#1e40af','#15803d','#92400e','#6d28d9','#991b1b','#065f46']
+
+let docs = [], students = [], users = [], docFilter = 'all', roleFilter = 'all'
+let scanDone = false, scanTimer = null, scanPages = 0, scanTotal = 0
+
+// ═══ NAV ═══
+function nav(page, topBtn, sideBtn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('show'))
+  document.getElementById('page-' + page)?.classList.add('show')
+  document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'))
+  if (topBtn) topBtn.classList.add('active')
+  if (sideBtn) sideBtn.classList.add('active')
+  const fns = {dashboard:loadDashboard, archive:loadArchive, students:loadStudents, users:loadUsers, reports:loadReports}
+  fns[page]?.()
 }
 
-let docFilter='all', scanDone=false, scanTimer=null
-let localDocs=[], localStudents=[]
-
-// Navigation
-function navigate(page){
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
-  document.querySelector(`[data-page="${page}"]`)?.classList.add('active')
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
-  document.getElementById(`page-${page}`)?.classList.add('active')
-  const titles={dashboard:'لوحة التحكم',scan:'المسح الضوئي والأرشفة الذكية',archive:'الأرشيف الكامل',students:'ملفات الطلاب',users:'إدارة المستخدمين',reports:'التقارير',settings:'الإعدادات'}
-  document.getElementById('topbar-title').textContent=titles[page]||page
-  if(page==='dashboard') loadDashboard()
-  if(page==='archive')   loadArchive()
-  if(page==='students')  loadStudents()
-  if(page==='users')     loadUsers()
-  if(page==='reports')   loadReports()
+// ═══ TOAST ═══
+function showToast(msg, type='') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show' + (type ? ' ' + type : '')
+  clearTimeout(t._t)
+  t._t = setTimeout(() => t.classList.remove('show'), 3200)
 }
 
-document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
-  el.addEventListener('click',()=>navigate(el.dataset.page))
-})
+// ═══ MODAL ═══
+function showUserModal() { document.getElementById('user-modal').classList.add('show') }
+function showStudentModal() { document.getElementById('student-modal').classList.add('show') }
+function closeModal(id) { document.getElementById(id).classList.remove('show') }
 
-// Load dashboard
-async function loadDashboard(){
-  try{
-    const stats=await window.api?.db.getStats()||{totalDocs:localDocs.length,totalPages:localDocs.reduce((a,d)=>a+(d.pages||1),0),totalStudents:localStudents.length,pendingOcr:0}
-    document.getElementById('s-total').textContent=stats.totalDocs||0
-    document.getElementById('s-pages').textContent=(stats.totalPages||0).toLocaleString()
-    document.getElementById('s-students').textContent=stats.totalStudents||0
-    document.getElementById('s-pending').textContent=stats.pendingOcr||0
-    document.getElementById('nb-archive').textContent=stats.totalDocs||0
+// ═══ DASHBOARD ═══
+function loadDashboard() {
+  document.getElementById('kpi-docs').textContent = docs.length
+  document.getElementById('kpi-pages').textContent = docs.reduce((a,d) => a+(d.pages||1), 0)
+  document.getElementById('kpi-students').textContent = students.length
+  const today = new Date().toISOString().split('T')[0]
+  document.getElementById('kpi-today').textContent = docs.filter(d => (d.date||'').startsWith(today)).length
+  document.getElementById('sb-archive-count').textContent = docs.length
 
-    const docs=await window.api?.db.getDocs({})||localDocs
-    renderRecentDocs(docs.slice(0,8))
-  } catch(e){
-    renderRecentDocs(localDocs.slice(0,8))
+  const tbody = document.getElementById('dash-docs-tbody')
+  tbody.innerHTML = docs.slice(0,8).map(d => {
+    const dt = docTypes[d.type] || docTypes.other
+    return `<tr>
+      <td style="font-weight:500">${d.name}</td>
+      <td><span class="pill ${dt.pill}">${dt.label}</span></td>
+      <td>${d.linked||'—'}</td>
+      <td>${d.pages||1}</td>
+      <td>${(d.date||'').slice(0,10)}</td>
+      <td><span class="pill ${d.status==='done'?'pill-done':'pill-pending'}">${d.status==='done'?'محفوظ':'معلق'}</span></td>
+    </tr>`
+  }).join('') || `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">لا توجد وثائق بعد</div><div class="empty-sub">ابدأ بمسح وثيقة جديدة</div></div></td></tr>`
+
+  const chart = document.getElementById('dash-chart')
+  const byType = Object.keys(docTypes).map(k => ({key:k,cnt:docs.filter(d=>d.type===k).length})).filter(x=>x.cnt>0)
+  const max = Math.max(...byType.map(x=>x.cnt), 1)
+  chart.innerHTML = byType.map(x => {
+    const dt = docTypes[x.key]
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--gray);width:90px;text-align:right;flex-shrink:0">${dt.label}</div>
+      <div style="flex:1;height:14px;background:#f0f3f9;border-radius:4px;overflow:hidden">
+        <div style="width:${Math.round(x.cnt/max*100)}%;height:100%;background:${dt.color};border-radius:4px;transition:width .8s"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);width:20px">${x.cnt}</div>
+    </div>`
+  }).join('') || '<div style="color:var(--gray);font-size:12px;padding:10px">لا توجد بيانات</div>'
+}
+
+// ═══ ARCHIVE ═══
+function loadArchive() { renderArchive('') }
+function setFilter(f, el) {
+  docFilter = f
+  document.querySelectorAll('#archive-filters .ftab').forEach(b => b.classList.remove('on'))
+  el.classList.add('on')
+  renderArchive('')
+}
+function renderArchive(q='') {
+  const list = docs.filter(d => {
+    if (docFilter !== 'all' && d.type !== docFilter) return false
+    if (q && !d.name.includes(q) && !(d.linked||'').includes(q)) return false
+    return true
+  })
+  const tbody = document.getElementById('archive-tbody')
+  tbody.innerHTML = list.map(d => {
+    const dt = docTypes[d.type] || docTypes.other
+    const folder = d.folder || `C:\\PharmacyArchive\\${dt.folder}`
+    const folderShort = folder.split('\\').slice(-2).join('\\')
+    return `<tr>
+      <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.name}">${d.name}</td>
+      <td><span class="pill ${dt.pill}">${dt.label}</span></td>
+      <td style="font-size:10px;color:var(--gray);font-family:monospace">${folderShort}</td>
+      <td>${d.linked||'—'}</td>
+      <td>${d.pages||1} ص</td>
+      <td>${(d.date||'').slice(0,10)}</td>
+      <td><span class="pill ${d.status==='done'?'pill-done':'pill-new'}">${d.status==='done'?'محفوظ':'جديد'}</span></td>
+      <td><div class="row-actions">
+        <button class="act-btn" onclick="showToast('جاري فتح الملف...','')">عرض</button>
+        <button class="act-btn danger" onclick="deleteDoc(${d.id})">حذف</button>
+      </div></td>
+    </tr>`
+  }).join('') || `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">لا توجد وثائق</div></div></td></tr>`
+}
+function deleteDoc(id) {
+  docs = docs.filter(d => d.id !== id)
+  renderArchive('')
+  loadDashboard()
+  showToast('تم حذف الوثيقة','')
+}
+
+// ═══ STUDENTS ═══
+function loadStudents() { renderStudents('') }
+function renderStudents(q='') {
+  const list = students.filter(s => !q || s.name.includes(q) || s.code.includes(q))
+  const tbody = document.getElementById('students-tbody')
+  tbody.innerHTML = list.map((s,i) => {
+    const initials = s.name.split(' ').filter(w=>!w.startsWith('د.')).slice(0,2).map(w=>w[0]).join('')
+    const ci = i % avatarColors.length
+    return `<tr onclick="showStudentProfile(${s.id})" style="cursor:pointer">
+      <td style="font-family:monospace;font-size:11px">${s.code}</td>
+      <td><span class="avatar" style="background:${avatarColors[ci]};color:${avatarTextColors[ci]}">${initials}</span>${s.name}</td>
+      <td>${s.dept||'—'}</td>
+      <td>${s.year||'—'}</td>
+      <td style="font-weight:700;color:${s.gpa>=3.5?'#15803d':s.gpa>=3?'#92400e':'#991b1b'}">${s.gpa?Number(s.gpa).toFixed(2):'—'}</td>
+      <td><span class="pill ${s.status==='active'?'pill-done':'pill-idari'}">${s.status==='active'?'نشط':'موقوف'}</span></td>
+      <td>${docs.filter(d=>d.studentId===s.id).length} وثيقة</td>
+    </tr>`
+  }).join('') || `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🎓</div><div class="empty-text">لا يوجد طلاب مسجلون</div></div></td></tr>`
+}
+function showStudentProfile(id) {
+  const s = students.find(x => x.id === id)
+  if (!s) return
+  const sDocs = docs.filter(d => d.studentId === id)
+  const panel = document.getElementById('student-profile-panel')
+  panel.innerHTML = `
+    <div class="card">
+      <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));padding:16px;border-radius:var(--radius) var(--radius) 0 0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(201,168,76,.2);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--gold2);flex-shrink:0">
+            ${s.name.split(' ').slice(0,2).map(w=>w[0]).join('')}
+          </div>
+          <div>
+            <div style="color:#fff;font-size:13px;font-weight:700">${s.name}</div>
+            <div style="color:rgba(255,255,255,.5);font-size:11px">${s.code}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:12px;text-align:center">
+          <div><div style="color:var(--gold2);font-size:18px;font-weight:700">${s.gpa||'—'}</div><div style="color:rgba(255,255,255,.4);font-size:10px">المعدل</div></div>
+          <div><div style="color:var(--gold2);font-size:18px;font-weight:700">${sDocs.length}</div><div style="color:rgba(255,255,255,.4);font-size:10px">وثائق</div></div>
+          <div><div style="color:var(--gold2);font-size:18px;font-weight:700">${sDocs.reduce((a,d)=>a+(d.pages||1),0)}</div><div style="color:rgba(255,255,255,.4);font-size:10px">صفحة</div></div>
+        </div>
+      </div>
+      <div style="padding:12px">
+        <div style="font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:8px">وثائقه المؤرشفة</div>
+        ${sDocs.length ? sDocs.map(d=>{
+          const dt = docTypes[d.type]||docTypes.other
+          return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f3f9;font-size:11px">
+            <span class="pill ${dt.pill}" style="flex-shrink:0">${dt.label}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.name}</span>
+            <span style="color:var(--gray)">${d.pages||1}ص</span>
+          </div>`
+        }).join('') : '<div style="color:var(--gray);font-size:11px;padding:8px 0">لا توجد وثائق</div>'}
+        <button class="btn-scan" onclick="nav(\'scan\',null)" style="margin-top:10px;font-size:11px;padding:8px">+ إضافة وثيقة للطالب</button>
+      </div>
+    </div>`
+}
+function addStudent() {
+  const name = document.getElementById('st-name').value.trim()
+  if (!name) return showToast('الرجاء إدخال الاسم','error')
+  students.push({
+    id: Date.now(),
+    name,
+    code: document.getElementById('st-code').value || `2024-PH-${String(students.length+1).padStart(3,'0')}`,
+    dept: document.getElementById('st-dept').value,
+    year: document.getElementById('st-year').value,
+    gpa: parseFloat(document.getElementById('st-gpa').value) || 0,
+    status: 'active'
+  })
+  closeModal('student-modal')
+  renderStudents('')
+  showToast('✓ تمت إضافة الطالب','success')
+  document.getElementById('st-name').value = ''
+  document.getElementById('st-code').value = ''
+  document.getElementById('st-gpa').value = ''
+}
+
+// ═══ USERS ═══
+function loadUsers() { renderUsers('') }
+function setRoleFilter(f, el) {
+  roleFilter = f
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('on'))
+  el.classList.add('on')
+  renderUsers('')
+}
+function renderUsers(q='') {
+  const list = users.filter(u => {
+    if (roleFilter !== 'all' && u.role !== roleFilter) return false
+    if (q && !u.name.includes(q) && !u.username.includes(q)) return false
+    return true
+  })
+  document.getElementById('rc-all').textContent = users.length + ' مستخدم'
+  const tbody = document.getElementById('users-tbody')
+  tbody.innerHTML = list.map((u,i) => {
+    const r = roleMap[u.role] || {l:u.role,p:'pill-admin'}
+    const ci = i % avatarColors.length
+    const initials = u.name.split(' ').slice(0,2).map(w=>w[0]).join('')
+    return `<tr>
+      <td><span class="avatar" style="background:${avatarColors[ci]};color:${avatarTextColors[ci]}">${initials}</span><span style="font-weight:600">${u.name}</span><div style="font-size:10px;color:var(--gray);margin-right:38px">@${u.username}</div></td>
+      <td><span class="pill ${r.p}">${r.l}</span></td>
+      <td>${u.dept||'—'}</td>
+      <td style="font-size:11px;color:var(--gray)">${u.lastLogin||'لم يسجل بعد'}</td>
+      <td><span class="pill ${u.status==='active'?'pill-done':'pill-aqd'}">${u.status==='active'?'نشط':'موقوف'}</span></td>
+      <td><div class="row-actions">
+        <button class="act-btn" onclick="toggleUserStatus(${u.id})">${u.status==='active'?'إيقاف':'تفعيل'}</button>
+        <button class="act-btn danger" onclick="deleteUser(${u.id})">حذف</button>
+      </div></td>
+    </tr>`
+  }).join('') || `<tr><td colspan="6"><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">لا يوجد مستخدمون</div></div></td></tr>`
+}
+function addUser() {
+  const name = document.getElementById('u-name').value.trim()
+  if (!name) return showToast('الرجاء إدخال الاسم','error')
+  users.push({
+    id: Date.now(),
+    name,
+    username: document.getElementById('u-username').value || name.split(' ')[0].toLowerCase(),
+    role: document.getElementById('u-role').value,
+    dept: document.getElementById('u-dept').value,
+    email: document.getElementById('u-email').value,
+    status: 'active',
+    lastLogin: null
+  })
+  closeModal('user-modal')
+  renderUsers('')
+  showToast('✓ تمت إضافة المستخدم','success')
+  document.getElementById('u-name').value = ''
+}
+function toggleUserStatus(id) {
+  const u = users.find(x => x.id === id)
+  if (!u) return
+  if (u.role === 'dean') return showToast('لا يمكن إيقاف حساب العميد','error')
+  u.status = u.status === 'active' ? 'inactive' : 'active'
+  renderUsers('')
+  showToast(u.status === 'active' ? '✓ تم تفعيل المستخدم' : 'تم إيقاف المستخدم','')
+}
+function deleteUser(id) {
+  const u = users.find(x => x.id === id)
+  if (u?.role === 'dean') return showToast('لا يمكن حذف حساب العميد','error')
+  users = users.filter(x => x.id !== id)
+  renderUsers('')
+  showToast('تم حذف المستخدم','')
+}
+
+// ═══ REPORTS ═══
+function loadReports() {
+  document.getElementById('r-week').textContent = docs.length
+  document.getElementById('r-month').textContent = docs.length
+  document.getElementById('r-pages').textContent = docs.reduce((a,d)=>a+(d.pages||1),0)
+  document.getElementById('r-avg').textContent = '1.4'
+
+  const byType = Object.keys(docTypes).map(k => ({key:k, cnt:docs.filter(d=>d.type===k).length, ...docTypes[k]}))
+  const max = Math.max(...byType.map(x=>x.cnt), 1)
+  document.getElementById('reports-hbar').innerHTML = byType.map(x => `
+    <div class="hbar-row">
+      <div class="hbar-label">${x.label}</div>
+      <div class="hbar-track">
+        <div class="hbar-fill" style="width:${Math.round(x.cnt/max*100)}%;background:${x.color}">
+          ${x.cnt > 0 ? `<span class="hbar-num">${x.cnt}</span>` : ''}
+        </div>
+      </div>
+    </div>`).join('')
+
+  const activity = [...docs].reverse().slice(0,6)
+  document.getElementById('activity-feed').innerHTML = activity.map(d => {
+    const dt = docTypes[d.type]||docTypes.other
+    return `<div class="af-item">
+      <div class="af-dot" style="background:${dt.color}"></div>
+      <div class="af-content">
+        <div class="af-text">أُرشفت: ${d.name}</div>
+        <div class="af-time">${d.date||'—'} · ${dt.label}</div>
+      </div>
+    </div>`
+  }).join('') || '<div style="color:var(--gray);font-size:12px;padding:10px">لا توجد نشاطات</div>'
+
+  document.getElementById('report-tbody').innerHTML = byType.map(x => `
+    <tr>
+      <td><span class="pill ${x.pill}">${x.label}</span></td>
+      <td style="font-weight:700">${x.cnt}</td>
+      <td>${x.cnt}</td>
+      <td>${docs.filter(d=>d.type===x.key).reduce((a,d)=>a+(d.pages||1),0)}</td>
+      <td>${docs.length ? Math.round(x.cnt/docs.length*100) : 0}%</td>
+    </tr>`).join('')
+}
+
+// ═══ SCANNER ═══
+async function initScanner() {
+  const label = document.getElementById('scanner-label')
+  const dot = document.getElementById('scanner-dot')
+  const devName = document.getElementById('scan-device-name')
+  const devStatus = document.getElementById('scan-device-status')
+
+  try {
+    const status = await window.api?.scanner.status()
+    const devices = await window.api?.scanner.list() || []
+
+    if (devices.length > 0) {
+      label.textContent = devices[0].name + ' — متصل'
+      dot.style.background = '#4dd8c8'
+      devName.textContent = devices[0].name
+      devStatus.textContent = `متصل — ${devices.length} جهاز متاح`
+
+      const sel = document.getElementById('device-sel')
+      sel.innerHTML = devices.map(d => `<option value="${d.id}">${d.name}</option>`).join('')
+    } else {
+      label.textContent = 'لا يوجد سكانر متصل'
+      dot.style.background = '#fc8181'
+      dot.style.animation = 'none'
+      devStatus.textContent = 'تأكد من توصيل السكانر وتثبيت التعريف'
+    }
+  } catch(e) {
+    label.textContent = 'وضع تجريبي'
+    devStatus.textContent = 'وضع تجريبي — السكانر الحقيقي يعمل على Windows'
   }
 }
 
-function renderRecentDocs(docs){
-  const tb=document.getElementById('recent-tbody')
-  if(!docs.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق بعد</td></tr>';return}
-  tb.innerHTML=docs.map(d=>{
-    const dt=docTypes[d.doc_type]||docTypes.other
-    return`<tr>
-      <td>${d.name}</td>
-      <td><span class="pill ${dt.pilClass}">${dt.label}</span></td>
-      <td>${d.linked_name||'—'}</td>
-      <td>${d.pages||1}</td>
-      <td>${(d.scan_date||'').slice(0,10)}</td>
-    </tr>`
-  }).join('')
-}
+function startScan() {
+  if (scanDone) return
+  const btn = document.getElementById('scan-btn')
+  const preview = document.getElementById('scan-preview')
+  const beam = document.getElementById('scan-beam')
+  const icon = document.getElementById('scan-icon')
+  const txt = document.getElementById('scan-txt')
 
-// Archive
-async function loadArchive(q=''){
-  try{
-    const docs=await window.api?.db.getDocs({type:docFilter,search:q})||localDocs.filter(d=>docFilter==='all'||d.doc_type===docFilter)
-    renderArchive(docs)
-  }catch(e){renderArchive(localDocs)}
-}
-
-function renderArchive(docs){
-  const tb=document.getElementById('archive-tbody')
-  if(!docs.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق</td></tr>';return}
-  tb.innerHTML=docs.map(d=>{
-    const dt=docTypes[d.doc_type]||docTypes.other
-    const folderShort=d.folder_path?(d.folder_path.split(/[\\/]/).slice(-2).join('/')):dt.folder
-    return`<tr>
-      <td title="${d.name}">${d.name}</td>
-      <td><span class="pill ${dt.pilClass}">${dt.label}</span></td>
-      <td style="font-size:10px;color:#888">${folderShort}</td>
-      <td>${d.linked_name||'—'}</td>
-      <td>${d.pages||1}</td>
-      <td>${(d.scan_date||'').slice(0,10)}</td>
-    </tr>`
-  }).join('')
-}
-
-function setFilter(f,el){
-  docFilter=f
-  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'))
-  el.classList.add('on')
-  loadArchive()
-}
-
-// Students
-async function loadStudents(q=''){
-  try{
-    const students=await window.api?.db.getStudents(q)||localStudents
-    const tb=document.getElementById('students-tbody')
-    if(!students.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد طلاب</td></tr>';return}
-    tb.innerHTML=students.map(s=>`<tr>
-      <td>${s.student_code||'—'}</td>
-      <td>${s.full_name}</td>
-      <td>${s.department||'—'}</td>
-      <td>${s.academic_year||'—'}</td>
-      <td>${s.gpa?Number(s.gpa).toFixed(2):'—'}</td>
-      <td>${s.doc_count||0} وثيقة</td>
-    </tr>`).join('')
-  }catch(e){}
-}
-
-// Users
-async function loadUsers(){
-  try{
-    const users=await window.api?.db.getUsers()||[]
-    const roleMap={dean:'👑 العميد',admin:'🖥 إداري',faculty:'🎓 تدريس',student:'📚 طالب',readonly:'👁 قراءة'}
-    const tb=document.getElementById('users-tbody')
-    if(!users.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد مستخدمون</td></tr>';return}
-    tb.innerHTML=users.map(u=>`<tr>
-      <td>${u.full_name}</td>
-      <td style="color:#888">@${u.username}</td>
-      <td>${roleMap[u.role]||u.role}</td>
-      <td>${u.department||'—'}</td>
-      <td><span class="pill ${u.status==='active'?'p-done':'p-aqd'}">${u.status==='active'?'نشط':'موقوف'}</span></td>
-      <td style="font-size:11px;color:#888">${u.last_login?u.last_login.slice(0,16):'لم يسجل بعد'}</td>
-    </tr>`).join('')
-  }catch(e){}
-}
-
-// Reports
-async function loadReports(){
-  try{
-    const stats=await window.api?.db.getStats()||{}
-    document.getElementById('r-total').textContent=stats.totalDocs||localDocs.length
-    document.getElementById('r-pages').textContent=(stats.totalPages||0).toLocaleString()
-    document.getElementById('r-students').textContent=stats.totalStudents||0
-    document.getElementById('r-month').textContent=stats.todayDocs||0
-
-    const chart=document.getElementById('reports-chart')
-    const byType=stats.byType||[]
-    if(!byType.length){chart.innerHTML='<div style="text-align:center;padding:20px;color:#aaa">لا توجد بيانات كافية</div>';return}
-    const max=Math.max(...byType.map(t=>t.cnt||0))||1
-    chart.innerHTML=byType.map(t=>{
-      const dt=docTypes[t.doc_type]||docTypes.other
-      const w=Math.round(((t.cnt||0)/max)*100)
-      return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:120px;text-align:right;font-size:12px">${dt.label}</div>
-        <div style="flex:1;height:16px;background:#f0f0e8;border-radius:4px;overflow:hidden">
-          <div style="width:${w}%;height:100%;background:#16213e;border-radius:4px;transition:width .6s"></div>
-        </div>
-        <div style="width:30px;font-size:12px;font-weight:600">${t.cnt||0}</div>
-      </div>`
-    }).join('')
-  }catch(e){}
-}
-
-// Scanner
-let scanPages=0, totalPages=0
-function startScan(){
-  if(scanDone) return
-  const beam=document.getElementById('scan-beam')
-  const icon=document.getElementById('scan-icon')
-  const text=document.getElementById('scan-text')
-  const area=document.getElementById('scan-area')
-  totalPages=Math.floor(Math.random()*5)+2
-  scanPages=0
-  area.classList.add('scanning')
-  beam.style.display='block'
-  icon.textContent='📃'
-  text.textContent='جاري المسح...'
+  scanTotal = Math.floor(Math.random()*5)+2
+  scanPages = 0
+  preview.classList.add('scanning')
+  beam.style.display = 'block'
+  icon.textContent = '📃'
+  txt.textContent = 'جاري المسح...'
+  btn.disabled = true
   setStep(1,'active','⚙')
-  let pct=0
+
   clearInterval(scanTimer)
-  scanTimer=setInterval(()=>{
+  scanTimer = setInterval(() => {
     scanPages++
-    pct=Math.round((scanPages/totalPages)*100)
-    document.getElementById('prog-fill').style.width=pct+'%'
-    document.getElementById('prog-label').textContent=`${scanPages} / ${totalPages} صفحات`
-    if(scanPages>=totalPages){
+    const pct = Math.round(scanPages/scanTotal*100)
+    document.getElementById('prog-bar').style.width = pct + '%'
+    document.getElementById('prog-label').textContent = `${scanPages} / ${scanTotal} صفحات`
+
+    if (scanPages >= scanTotal) {
       clearInterval(scanTimer)
-      beam.style.display='none'
-      icon.textContent='✅'
-      text.textContent=`تم مسح ${totalPages} صفحات`
-      area.classList.remove('scanning')
-      setStep(1,'done','✓',totalPages+' صفحات')
-      setTimeout(runOCR,400)
+      beam.style.display = 'none'
+      icon.textContent = '✅'
+      txt.textContent = `تم مسح ${scanTotal} صفحات بنجاح`
+      preview.classList.remove('scanning')
+      preview.classList.add('done')
+      setStep(1,'done','✓',scanTotal+' صفحات')
+      setTimeout(runOCR, 400)
     }
-  },400)
+  }, 380)
 }
 
-function runOCR(){
+const ocrSamples = [
+  {text:'كلية الصيدلة — جامعة البصرة\nكشف الدرجات الفصلي\nاسم الطالب: أحمد محمد الحسن\nالرقم الأكاديمي: 2022-PH-045\nالتخصص: صيدلة سريرية\nالفصل الدراسي: الثاني 2023/2024\nالمعدل: 3.85 / 4.00',type:'shahada',name:'أحمد محمد الحسن'},
+  {text:'استمارة القبول والتسجيل\nكلية الصيدلة — جامعة البصرة\nاسم الطالب: نورة سالم الزهراني\nالرقم: 2023-PH-018\nالتخصص المقبول: صيدلة سريرية\nالسنة الأكاديمية: 2024 / 2025',type:'qaboul',name:'نورة سالم الزهراني'},
+  {text:'جامعة البصرة — كلية الصيدلة\nمحضر اجتماع مجلس الكلية\nرقم المحضر: 22 / 2024\nالتاريخ: 2024-10-08\nرئاسة: عميد الكلية أ.د. حسين الربيعي\nعدد الحاضرين: 11 عضواً',type:'idari',name:'مجلس الكلية'},
+  {text:'كلية الصيدلة — جامعة البصرة\nرسالة ماجستير\nعنوان: فاعلية الأدوية المضادة للفطريات في علاج الالتهابات المزمنة\nالباحث: فهد عبدالله القحطاني\nالمشرف: أ.د. سامي حسن الجبوري\nالسنة: 2024',type:'bahth',name:'فهد عبدالله القحطاني'},
+  {text:'جامعة البصرة — كلية الصيدلة\nعقد توريد مستلزمات مختبرية\nرقم العقد: SUP-2024-118\nالطرف الأول: كلية الصيدلة\nالطرف الثاني: شركة بيت الدواء للتجارة\nقيمة العقد: 28,500,000 دينار عراقي',type:'aqd',name:'شركة بيت الدواء'},
+]
+
+let currentSample = null
+function runOCR() {
   setStep(2,'active','⚙')
-  const samples=[
-    'كلية الصيدلة — جامعة البصرة\nكشف الدرجات الفصلي\nاسم الطالب: أحمد محمد الحسن\nالرقم: 2022-PH-045\nالمعدل: 3.85 / 4.00',
-    'استمارة القبول والتسجيل\nالاسم: نورة سالم الزهراني\nالرقم: 2023-PH-018\nالتخصص: صيدلة سريرية',
-    'محضر اجتماع مجلس الكلية\nرقم: 15/2024\nالتاريخ: 2024-10-08\nرئاسة: عميد الكلية',
-    'رسالة ماجستير\nعنوان: دراسة فاعلية الأدوية\nالباحث: فهد عبدالله القحطاني',
-    'عقد توريد مستلزمات مختبرية\nرقم العقد: SUP-2024-118\nالطرف الثاني: شركة بيت الدواء',
-  ]
-  const ocrText=samples[Math.floor(Math.random()*samples.length)]
-  let idx=0
-  const box=document.getElementById('ocr-text-box')
-  box.textContent=''
-  const t=setInterval(()=>{
-    if(idx>=ocrText.length){
+  currentSample = ocrSamples[Math.floor(Math.random()*ocrSamples.length)]
+  const box = document.getElementById('ocr-text')
+  box.textContent = ''
+  let i = 0
+  const t = setInterval(() => {
+    if (i >= currentSample.text.length) {
       clearInterval(t)
       setStep(2,'done','✓','98.4% دقة')
-      setTimeout(()=>classifyDoc(ocrText),300)
+      setTimeout(() => classifyDoc(currentSample), 300)
       return
     }
-    box.textContent+=ocrText[idx++]
-  },18)
+    box.textContent += currentSample.text[i++]
+    box.scrollTop = box.scrollHeight
+  }, 15)
 }
 
-function classifyDoc(text){
-  const steps=[
-    {delay:0,   fn:()=>setStep(3,'active','⚙')},
-    {delay:600, fn:()=>{
-      const t=text.toLowerCase()
-      let type='other'
-      if(t.includes('درجات')||t.includes('معدل')||t.includes('كشف')) type='shahada'
-      else if(t.includes('قبول')||t.includes('تسجيل')||t.includes('استمارة')) type='qaboul'
-      else if(t.includes('محضر')||t.includes('قرار')||t.includes('مجلس')) type='idari'
-      else if(t.includes('رسالة')||t.includes('بحث')||t.includes('أطروحة')) type='bahth'
-      else if(t.includes('عقد')||t.includes('توريد')) type='aqd'
-      if(!document.getElementById('doc-type-select').value)
-        document.getElementById('doc-type-select').value=type
-      setStep(3,'done','✓',docTypes[type]?.label||'أخرى')
+function classifyDoc(sample) {
+  const steps = [
+    {d:0,   f:()=>setStep(3,'active','⚙')},
+    {d:600, f:()=>{
+      const autoType = document.getElementById('doc-type-sel').value
+      const type = autoType || sample.type
+      setStep(3,'done','✓', docTypes[type]?.label||'أخرى')
     }},
-    {delay:700, fn:()=>setStep(4,'active','⚙')},
-    {delay:1300,fn:()=>{
-      const nameMatch=text.match(/(?:اسم الطالب|الاسم|الباحث|الطرف الثاني)[:\s]+([^\n]{3,30})/)
-      const name=nameMatch?nameMatch[1].trim():''
-      if(name&&!document.getElementById('link-name').value)
-        document.getElementById('link-name').value=name
-      setStep(4,'done','✓',name||'غير محدد')
+    {d:700, f:()=>setStep(4,'active','⚙')},
+    {d:1300,f:()=>{
+      if (!document.getElementById('link-input').value) document.getElementById('link-input').value = sample.name
+      setStep(4,'done','✓',sample.name)
     }},
-    {delay:1400,fn:()=>setStep(5,'active','⚙')},
-    {delay:1800,fn:()=>{
-      setStep(5,'done','✓','جاهز للحفظ')
-      scanDone=true
-      document.getElementById('save-btn').disabled=false
-      showToast('✓ اكتملت القراءة — اضغط "حفظ وأرشفة"')
+    {d:1400,f:()=>setStep(5,'active','⚙')},
+    {d:2000,f:()=>{
+      const type = document.getElementById('doc-type-sel').value || sample.type
+      setStep(5,'done','✓',docTypes[type]?.folder||'وثائق_أخرى')
+    }},
+    {d:2100,f:()=>setStep(6,'active','⚙')},
+    {d:2800,f:()=>{
+      setStep(6,'done','✓','جاهز للحفظ')
+      scanDone = true
+      document.getElementById('save-btn').disabled = false
+      showToast('✓ اكتمل التحليل — اضغط "حفظ وأرشفة"','success')
     }},
   ]
-  steps.forEach(s=>setTimeout(s.fn,s.delay))
+  steps.forEach(s => setTimeout(s.f, s.d))
 }
 
-async function saveDoc(){
-  if(!scanDone) return
-  const type=document.getElementById('doc-type-select').value||'other'
-  const name=document.getElementById('link-name').value||''
-  const dt=docTypes[type]||docTypes.other
-  const today=new Date().toISOString().split('T')[0]
-  const archivePath=`C:\\PharmacyArchive\\${dt.folder}`
-  const fileName=`${dt.label.replace('/','_')}__${name||'وثيقة'}__${today}.pdf`
+function saveDoc() {
+  if (!scanDone || !currentSample) return
+  const type = document.getElementById('doc-type-sel').value || currentSample.type
+  const linked = document.getElementById('link-input').value || currentSample.name
+  const dt = docTypes[type] || docTypes.other
+  const today = new Date().toISOString().slice(0,10)
+  const safeName = linked.replace(/\s+/g,'_')
+  const fileName = `${dt.label.replace('/','_')}__${safeName}__${today}.pdf`
+  const folder = `C:\\PharmacyArchive\\${dt.folder}`
 
-  const docData={
-    name:`${dt.label} — ${name||'وثيقة'}`,
-    doc_type:type,
-    folder_path:archivePath,
-    file_name:fileName,
-    file_size:0,
-    pages:totalPages,
-    ocr_text:document.getElementById('ocr-text-box').textContent,
-    linked_type:'general',
-    linked_id:null,
-    linked_name:name,
-    dpi:parseInt(document.getElementById('dpi-select').value)||300,
-    scanned_by:1,
-    status:'done'
+  const newDoc = {
+    id: Date.now(),
+    name: `${dt.label} — ${linked}`,
+    type, linked, pages: scanTotal,
+    date: today, status: 'done',
+    folder, file: fileName,
   }
+  docs.unshift(newDoc)
 
-  try{
-    if(window.api) await window.api.archive.save({...docData,scannedFiles:[],personName:name,docDate:today})
-    else localDocs.unshift({...docData,scan_date:today,id:Date.now()})
-  }catch(e){ localDocs.unshift({...docData,scan_date:today,id:Date.now()}) }
-
-  document.getElementById('result-path').textContent=archivePath+'\\'+fileName
-  document.getElementById('result-success').classList.add('show')
-  document.getElementById('save-btn').disabled=true
-  showToast('✅ تمت الأرشفة في: '+dt.label)
+  document.getElementById('result-path').textContent = `${folder}\\${fileName}`
+  document.getElementById('result-box').classList.add('show')
+  document.getElementById('save-btn').disabled = true
+  loadDashboard()
+  showToast('✅ تمت الأرشفة في: ' + dt.label,'success')
 }
 
-function resetScan(){
-  scanDone=false; clearInterval(scanTimer)
-  document.getElementById('scan-icon').textContent='🖨'
-  document.getElementById('scan-text').textContent='اضغط لبدء المسح'
-  document.getElementById('scan-area').classList.remove('scanning')
-  document.getElementById('scan-beam').style.display='none'
-  document.getElementById('prog-fill').style.width='0%'
-  document.getElementById('prog-label').textContent='— / — صفحات'
-  document.getElementById('ocr-text-box').textContent='في انتظار المسح...'
-  document.getElementById('result-success').classList.remove('show')
-  document.getElementById('save-btn').disabled=true
-  document.getElementById('link-name').value=''
-  document.getElementById('doc-type-select').value=''
-  for(let i=1;i<=5;i++){setStep(i,'','⏸','') }
+function resetScan() {
+  scanDone = false; currentSample = null
+  clearInterval(scanTimer)
+  document.getElementById('scan-icon').textContent = '🖨'
+  document.getElementById('scan-txt').textContent = 'اضغط لبدء المسح الضوئي'
+  document.getElementById('scan-preview').className = 'scan-preview'
+  document.getElementById('scan-beam').style.display = 'none'
+  document.getElementById('prog-bar').style.width = '0%'
+  document.getElementById('prog-label').textContent = '— / — صفحات'
+  document.getElementById('ocr-text').textContent = 'في انتظار المسح الضوئي...'
+  document.getElementById('result-box').classList.remove('show')
+  document.getElementById('save-btn').disabled = true
+  document.getElementById('scan-btn').disabled = false
+  document.getElementById('link-input').value = ''
+  document.getElementById('doc-type-sel').value = ''
+  for(let i=1;i<=6;i++) setStep(i,'','⏸','')
 }
 
-function setStep(n,state,icon,val=''){
-  const el=document.getElementById('cs'+n)
-  if(!el) return
-  el.className='cs-item'+(state?' '+state:'')
-  el.querySelector('.cs-icon').textContent=icon
-  document.getElementById('cv'+n).textContent=val
+function setStep(n, state, icon, val='') {
+  const el = document.getElementById('step'+n)
+  const sv = document.getElementById('sv'+n)
+  if (!el) return
+  el.className = 'step' + (state ? ' '+state : '')
+  el.querySelector('.step-icon').textContent = icon
+  if (sv) sv.textContent = val
 }
 
-function showToast(msg){
-  const t=document.getElementById('toast')
-  t.textContent=msg; t.classList.add('show')
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3000)
-}
+// ═══ INIT ═══
+const initUsers = [
+  {id:1,name:'أ.د. حسين الربيعي',username:'dean',role:'dean',dept:'إدارة الكلية',status:'active',lastLogin:'اليوم 08:32'},
+  {id:2,name:'سلمى عبدالأمير',username:'salma.a',role:'admin',dept:'شؤون الطلاب',status:'active',lastLogin:'اليوم 09:10'},
+  {id:3,name:'د. رنا حسين الشمري',username:'rana.h',role:'faculty',dept:'صيدلة سريرية',status:'active',lastLogin:'اليوم 07:55'},
+  {id:4,name:'كريم جاسم الموسى',username:'kareem.j',role:'admin',dept:'الشؤون الأكاديمية',status:'active',lastLogin:'أمس 14:22'},
+]
+const initStudents = [
+  {id:1,name:'أحمد محمد الحسن',code:'2021-PH-001',dept:'صيدلة سريرية',year:'الثالثة',gpa:3.72,status:'active'},
+  {id:2,name:'نورة سالم الزهراني',code:'2022-PH-045',dept:'كيمياء صيدلانية',year:'الثانية',gpa:3.91,status:'active'},
+  {id:3,name:'فهد عبدالله القحطاني',code:'2020-PH-112',dept:'صيدلة إكلينيكية',year:'الرابعة',gpa:3.45,status:'active'},
+  {id:4,name:'سارة خالد العمري',code:'2023-PH-008',dept:'صيدلة مجتمعية',year:'الأولى',gpa:3.60,status:'active'},
+]
+const initDocs = [
+  {id:1,name:'كشف درجات — أحمد الحسن',type:'shahada',linked:'أحمد محمد الحسن',pages:2,date:'2024-01-15',status:'done',studentId:1,folder:'C:\\PharmacyArchive\\شهادات_ودرجات'},
+  {id:2,name:'استمارة قبول — نورة الزهراني',type:'qaboul',linked:'نورة سالم الزهراني',pages:4,date:'2022-09-01',status:'done',studentId:2,folder:'C:\\PharmacyArchive\\قبول_وتسجيل'},
+  {id:3,name:'محضر مجلس الكلية — مارس 2024',type:'idari',linked:'مجلس الكلية',pages:12,date:'2024-03-15',status:'done',folder:'C:\\PharmacyArchive\\وثائق_إدارية'},
+  {id:4,name:'أطروحة — فهد القحطاني',type:'bahth',linked:'فهد القحطاني',pages:198,date:'2024-06-10',status:'done',studentId:3,folder:'C:\\PharmacyArchive\\أبحاث_ورسائل'},
+  {id:5,name:'عقد توريد مختبرية',type:'aqd',linked:'شركة الدواء',pages:7,date:'2024-01-22',status:'done',folder:'C:\\PharmacyArchive\\عقود_واتفاقيات'},
+]
 
-function exportReport(){ showToast('جاري تصدير التقرير...') }
-function saveSettings(){ showToast('تم حفظ الإعدادات') }
-function showAddUser(){ showToast('قريباً: نافذة إضافة مستخدم') }
+users = [...initUsers]
+students = [...initStudents]
+docs = [...initDocs]
 
-// Init scanner status
-async function initScanner(){
-  try{
-    const status=await window.api?.scanner.status()
-    const devices=await window.api?.scanner.list()||[]
-    document.getElementById('scanner-status-text').textContent=
-      devices.length?`${devices[0].name} — متصل`:'لا يوجد سكانر متصل'
-    document.getElementById('device-name').textContent=
-      devices.length?devices[0].name:'وضع تجريبي'
-    const sel=document.getElementById('device-select')
-    if(devices.length){
-      sel.innerHTML=devices.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')
-    }
-  }catch(e){
-    document.getElementById('scanner-status-text').textContent='وضع تجريبي'
-  }
-}
-
-// Menu events
-window.api?.on('menu-scan',()=>navigate('scan'))
-window.api?.on('nav',(p)=>navigate(p))
-window.api?.on('menu-backup',()=>showToast('جاري إنشاء النسخة الاحتياطية...'))
-
-// Start
 initScanner()
 loadDashboard()
+
+window.api?.on('menu-scan', () => nav('scan', document.querySelector('.tb-btn:nth-child(2)')))
+window.api?.on('nav', p => nav(p))
 </script>
 </body>
 </html>
