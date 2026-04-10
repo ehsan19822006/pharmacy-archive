@@ -1,0 +1,28 @@
+name: Build Windows EXE
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        run: |
+          npm install --ignore-scripts
+          npm uninstall better-sqlite3
+          npm install sql.js
+      - name: Build
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: pharmacy-archive-windows
+          path: dist/*.exe
+          retention-days: 30
