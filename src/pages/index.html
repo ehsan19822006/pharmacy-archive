@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام الأرشفة الإلكترونية — كلية الصيدلة</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{background:#f5f5f0;color:#1a1a1a;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.titlebar{height:32px;background:#1a1a2e;display:flex;align-items:center;padding:0 12px;-webkit-app-region:drag;flex-shrink:0}
+.titlebar-title{color:#fff;font-size:12px;opacity:.8}
+.app{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:200px;background:#16213e;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:16px 12px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#0f3460,#533483);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:20px}
+.logo-name{color:#fff;font-size:12px;font-weight:600;line-height:1.4}
+.logo-sub{color:rgba(255,255,255,.5);font-size:10px;margin-top:2px}
+.nav-section{padding:12px 10px 4px;font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6);margin:1px 6px;border-radius:8px;transition:all .15s}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(99,153,34,.2);color:#7dd35a}
+.nav-item .ni{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-right:auto;background:rgba(55,138,221,.3);color:#85b7eb;font-size:10px;padding:1px 6px;border-radius:10px}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.08)}
+.scanner-status{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.5)}
+.dot{width:7px;height:7px;border-radius:50%;background:#639922;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:12px 16px;background:#fff;border-bottom:1px solid #e5e5e0;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.topbar-title{font-size:15px;font-weight:600;color:#1a1a1a;flex:1}
+.btn{padding:7px 14px;font-size:12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:#f5f5f0;border-color:#bbb}
+.btn-primary{background:#16213e;color:#fff;border-color:#16213e}
+.btn-primary:hover{background:#0f3460}
+.btn-scan{background:#0f6e56;color:#fff;border-color:#0f6e56}
+.btn-scan:hover{background:#085041}
+.content{flex:1;overflow-y:auto;padding:16px}
+
+/* Pages */
+.page{display:none}
+.page.active{display:block}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e0}
+.stat-label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-val{font-size:24px;font-weight:700;color:#1a1a1a}
+.stat-sub{font-size:10px;color:#639922;margin-top:2px}
+.stat-card.blue .stat-val{color:#185fa5}
+.stat-card.green .stat-val{color:#0f6e56}
+.stat-card.amber .stat-val{color:#854f0b}
+.stat-card.purple .stat-val{color:#534ab7}
+
+/* Cards */
+.card{background:#fff;border-radius:10px;border:1px solid #e8e8e0;overflow:hidden;margin-bottom:12px}
+.card-header{padding:12px 16px;border-bottom:1px solid #e8e8e0;display:flex;align-items:center;gap:8px;background:#fafaf8}
+.card-title{font-size:13px;font-weight:600;flex:1}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 12px;text-align:right;color:#888;font-weight:500;font-size:11px;border-bottom:1px solid #e8e8e0;background:#fafaf8}
+td{padding:9px 12px;border-bottom:1px solid #f0f0e8;color:#1a1a1a}
+tr:last-child td{border:none}
+tr:hover td{background:#f8f8f4;cursor:pointer}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.p-shahada{background:#e6f1fb;color:#0c447c}
+.p-qaboul{background:#eaf3de;color:#27500a}
+.p-idari{background:#faeeda;color:#633806}
+.p-bahth{background:#eeedfe;color:#3c3489}
+.p-aqd{background:#faece7;color:#712b13}
+.p-done{background:#eaf3de;color:#27500a}
+.p-new{background:#e6f1fb;color:#0c447c}
+
+/* Scanner */
+.scan-wizard{display:grid;grid-template-columns:280px 1fr;gap:12px}
+.scanner-box{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;flex-direction:column;gap:12px}
+.device-header{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0f6e56}
+.scan-area{border:2px dashed #ddd;border-radius:8px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s;background:#fafaf8}
+.scan-area:hover{border-color:#0f6e56}
+.scan-area.scanning{border-color:#0f6e56;border-style:solid}
+.scan-beam{position:absolute;left:0;right:0;height:2px;background:#0f6e56;top:0;display:none;animation:scanBeam 1s linear infinite}
+@keyframes scanBeam{0%{top:0}100%{top:100%}}
+.scan-icon{font-size:32px}
+.scan-text{font-size:11px;color:#888}
+.prog-bar{height:4px;background:#e8e8e0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:#0f6e56;border-radius:4px;width:0;transition:width .2s}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:11px;color:#888;font-weight:500}
+.field select,.field input{padding:7px 10px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.field select:focus,.field input:focus{border-color:#0f6e56}
+
+/* OCR Panel */
+.ocr-result-panel{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ocr-text-box{background:#fafaf8;border:1px solid #e8e8e0;border-radius:8px;padding:10px;font-size:11px;color:#555;min-height:80px;line-height:1.8;white-space:pre-line}
+.classify-steps{display:flex;flex-direction:column;gap:6px}
+.cs-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid #e8e8e0;font-size:11px;transition:all .3s}
+.cs-item.done{border-color:#b8dba0;background:#f0fae8;color:#27500a}
+.cs-item.active{border-color:#85b7eb;background:#eaf4ff;color:#0c447c}
+.cs-item .cs-icon{font-size:14px;width:18px;text-align:center}
+.cs-item .cs-val{margin-right:auto;font-weight:600;font-size:10px}
+.result-success{background:#f0fae8;border:1px solid #b8dba0;border-radius:8px;padding:14px;display:none;flex-direction:column;gap:6px}
+.result-success.show{display:flex}
+.result-path{font-family:monospace;font-size:11px;background:rgba(99,153,34,.1);padding:5px 8px;border-radius:6px;color:#27500a}
+
+/* Search */
+.search-wrap{position:relative;flex:1}
+.search-wrap input{width:100%;padding:7px 10px 7px 30px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.search-wrap input:focus{border-color:#16213e}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px}
+.filter-row{display:flex;gap:5px}
+.ftab{padding:4px 12px;font-size:11px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;white-space:nowrap}
+.ftab.on{background:#16213e;color:#fff;border-color:#16213e}
+
+/* Profile */
+.profile-header{background:#fff;border-radius:10px;border:1px solid #e8e8e0;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.ph-avatar{width:56px;height:56px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#0c447c;flex-shrink:0}
+.ph-name{font-size:16px;font-weight:700}
+.ph-id{font-size:12px;color:#888;margin-top:2px}
+.ph-stats{margin-right:auto;display:flex;gap:20px;text-align:center}
+.ph-stat-val{font-size:20px;font-weight:700;color:#16213e}
+.ph-stat-label{font-size:10px;color:#888}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ic-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0e8;font-size:12px}
+.ic-row:last-child{border:none}
+.ic-key{color:#888}
+.ic-val{font-weight:600}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16213e;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="titlebar-title">نظام الأرشفة الإلكترونية — كلية الصيدلة</div>
+</div>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">⚗</div>
+      <div class="logo-name">كلية الصيدلة</div>
+      <div class="logo-sub">جامعة البصرة</div>
+    </div>
+
+    <div class="nav-section">الرئيسية</div>
+    <div class="nav-item active" data-page="dashboard"><span class="ni">◈</span>لوحة التحكم</div>
+    <div class="nav-item" data-page="scan"><span class="ni">🖨</span>مسح وأرشفة<span class="nav-badge">جديد</span></div>
+
+    <div class="nav-section">الملفات</div>
+    <div class="nav-item" data-page="archive"><span class="ni">📂</span>الأرشيف<span class="nav-badge" id="nb-archive">0</span></div>
+    <div class="nav-item" data-page="students"><span class="ni">🎓</span>ملفات الطلاب</div>
+    <div class="nav-item" data-page="users"><span class="ni">👥</span>المستخدمون</div>
+
+    <div class="nav-section">النظام</div>
+    <div class="nav-item" data-page="reports"><span class="ni">📊</span>التقارير</div>
+    <div class="nav-item" data-page="settings"><span class="ni">⚙</span>الإعدادات</div>
+
+    <div class="sidebar-bottom">
+      <div class="scanner-status">
+        <span class="dot"></span>
+        <span id="scanner-status-text">جاري الاتصال...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">لوحة التحكم</div>
+      <button class="btn btn-scan" onclick="navigate('scan')">🖨 مسح وثيقة جديدة</button>
+      <button class="btn btn-primary" onclick="exportReport()">تصدير التقرير</button>
+    </div>
+
+    <div class="content">
+
+      <!-- Dashboard -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-label">إجمالي الوثائق</div>
+            <div class="stat-val" id="s-total">0</div>
+            <div class="stat-sub">وثيقة مؤرشفة</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">إجمالي الصفحات</div>
+            <div class="stat-val" id="s-pages">0</div>
+            <div class="stat-sub">صفحة ممسوحة</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">ملفات الطلاب</div>
+            <div class="stat-val" id="s-students">0</div>
+            <div class="stat-sub">طالب مسجل</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">بانتظار المعالجة</div>
+            <div class="stat-val" id="s-pending">0</div>
+            <div class="stat-sub">وثيقة معلقة</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 آخر الوثائق المؤرشفة</div>
+            <button class="btn" onclick="navigate('archive')">عرض الكل</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>اسم الوثيقة</th>
+                <th>النوع</th>
+                <th>مرتبط بـ</th>
+                <th>الصفحات</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="recent-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق بعد — ابدأ بمسح وثيقة جديدة</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Scanner Page -->
+      <div class="page" id="page-scan">
+        <div class="scan-wizard">
+          <div class="scanner-box">
+            <div class="device-header">🖨 السكانر — <span id="device-name">جاري البحث...</span></div>
+
+            <div class="scan-area" id="scan-area" onclick="startScan()">
+              <div class="scan-beam" id="scan-beam"></div>
+              <div class="scan-icon" id="scan-icon">🖨</div>
+              <div class="scan-text" id="scan-text">اضغط لبدء المسح</div>
+            </div>
+
+            <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+            <div style="font-size:11px;color:#888;text-align:center" id="prog-label">— / — صفحات</div>
+
+            <div class="field">
+              <label>الجهاز</label>
+              <select id="device-select"><option value="demo">سكانر تجريبي</option></select>
+            </div>
+            <div class="field">
+              <label>جودة المسح</label>
+              <select id="dpi-select">
+                <option value="200">200 DPI — معاينة</option>
+                <option value="300" selected>300 DPI — قياسي</option>
+                <option value="600">600 DPI — أرشيف</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>نوع الوثيقة</label>
+              <select id="doc-type-select">
+                <option value="">— سيُحدد تلقائياً —</option>
+                <option value="shahada">شهادة / درجات</option>
+                <option value="qaboul">قبول / تسجيل</option>
+                <option value="idari">وثيقة إدارية</option>
+                <option value="bahth">بحث / رسالة</option>
+                <option value="aqd">عقد / اتفاقية</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>ربط بـ (اختياري)</label>
+              <input type="text" id="link-name" placeholder="اسم الطالب أو الجهة">
+            </div>
+
+            <button class="btn btn-scan" style="width:100%" onclick="startScan()">▶ بدء المسح الضوئي</button>
+          </div>
+
+          <div class="ocr-result-panel">
+            <div style="font-size:13px;font-weight:600">⚙ النص المستخرج والتصنيف التلقائي</div>
+
+            <div class="classify-steps">
+              <div class="cs-item" id="cs1"><span class="cs-icon">⏸</span><span>مسح الوثيقة ضوئياً</span><span class="cs-val" id="cv1"></span></div>
+              <div class="cs-item" id="cs2"><span class="cs-icon">⏸</span><span>قراءة النص (OCR)</span><span class="cs-val" id="cv2"></span></div>
+              <div class="cs-item" id="cs3"><span class="cs-icon">⏸</span><span>تحديد نوع الوثيقة</span><span class="cs-val" id="cv3"></span></div>
+              <div class="cs-item" id="cs4"><span class="cs-icon">⏸</span><span>استخراج اسم الشخص</span><span class="cs-val" id="cv4"></span></div>
+              <div class="cs-item" id="cs5"><span class="cs-icon">⏸</span><span>حفظ في المجلد المناسب</span><span class="cs-val" id="cv5"></span></div>
+            </div>
+
+            <div style="font-size:11px;font-weight:500;color:#888">النص المستخرج:</div>
+            <div class="ocr-text-box" id="ocr-text-box">في انتظار المسح...</div>
+
+            <div class="result-success" id="result-success">
+              <div style="font-size:14px;font-weight:700;color:#27500a">✅ تمت الأرشفة بنجاح!</div>
+              <div style="font-size:12px;color:#555">تم حفظ الوثيقة في:</div>
+              <div class="result-path" id="result-path"></div>
+              <button class="btn btn-primary" onclick="resetScan()" style="margin-top:4px">مسح وثيقة أخرى</button>
+            </div>
+
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" style="flex:1" onclick="saveDoc()" id="save-btn" disabled>💾 حفظ وأرشفة</button>
+              <button class="btn" onclick="resetScan()">↺ إعادة تعيين</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive Page -->
+      <div class="page" id="page-archive">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📂 الأرشيف الكامل</div>
+            <div class="filter-row">
+              <button class="ftab on" onclick="setFilter('all',this)">الكل</button>
+              <button class="ftab" onclick="setFilter('shahada',this)">شهادات</button>
+              <button class="ftab" onclick="setFilter('qaboul',this)">قبول</button>
+              <button class="ftab" onclick="setFilter('idari',this)">إدارية</button>
+              <button class="ftab" onclick="setFilter('bahth',this)">أبحاث</button>
+              <button class="ftab" onclick="setFilter('aqd',this)">عقود</button>
+            </div>
+            <div class="search-wrap" style="max-width:200px">
+              <span class="search-icon">⌕</span>
+              <input type="text" placeholder="بحث..." oninput="loadArchive(this.value)">
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30%">اسم الوثيقة</th>
+                <th style="width:15%">النوع</th>
+                <th style="width:20%">المسار</th>
+                <th style="width:15%">مرتبط بـ</th>
+                <th style="width:8%">صفحات</th>
+                <th style="width:12%">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="archive-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Students Page -->
+      <div class="page" id="page-students">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎓 ملفات الطلاب</div>
+            <div class="search-wrap" style="max-width:220px">
+              <span class="search-icon">⌕</span>
+              <input type="text" placeholder="بحث بالاسم أو الرقم..." oninput="loadStudents(this.value)">
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>الرقم الأكاديمي</th>
+                <th>الاسم</th>
+                <th>القسم</th>
+                <th>المرحلة</th>
+                <th>المعدل</th>
+                <th>الوثائق</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد طلاب مسجلون</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Users Page -->
+      <div class="page" id="page-users">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👥 إدارة المستخدمين</div>
+            <button class="btn btn-primary" onclick="showAddUser()">+ إضافة مستخدم</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>اسم المستخدم</th>
+                <th>الدور</th>
+                <th>القسم</th>
+                <th>الحالة</th>
+                <th>آخر دخول</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">جاري التحميل...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reports Page -->
+      <div class="page" id="page-reports">
+        <div class="stats-grid">
+          <div class="stat-card blue"><div class="stat-label">وثائق هذا الشهر</div><div class="stat-val" id="r-month">0</div></div>
+          <div class="stat-card green"><div class="stat-label">صفحات ممسوحة</div><div class="stat-val" id="r-pages">0</div></div>
+          <div class="stat-card amber"><div class="stat-label">طلاب مؤرشف لهم</div><div class="stat-val" id="r-students">0</div></div>
+          <div class="stat-card purple"><div class="stat-label">إجمالي الوثائق</div><div class="stat-val" id="r-total">0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">📊 توزيع الوثائق حسب النوع</div></div>
+          <div style="padding:16px" id="reports-chart"></div>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div class="page" id="page-settings">
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚙ إعدادات النظام</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div class="field"><label>مسار الأرشيف الرئيسي</label><input type="text" id="archive-path" placeholder="C:\PharmacyArchive"></div>
+            <div class="field"><label>اسم المؤسسة</label><input type="text" id="college-name" value="كلية الصيدلة — جامعة البصرة"></div>
+            <div class="field"><label>جودة المسح الافتراضية</label>
+              <select id="default-dpi"><option value="200">200 DPI</option><option value="300" selected>300 DPI</option><option value="600">600 DPI</option></select>
+            </div>
+            <button class="btn btn-primary" style="align-self:flex-start" onclick="saveSettings()">حفظ الإعدادات</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const docTypes={
+  shahada:{label:'شهادة/درجات',folder:'شهادات_ودرجات',pilClass:'p-shahada'},
+  qaboul: {label:'قبول/تسجيل', folder:'قبول_وتسجيل',  pilClass:'p-qaboul'},
+  idari:  {label:'إدارية',      folder:'وثائق_إدارية',  pilClass:'p-idari'},
+  bahth:  {label:'بحث/رسالة',  folder:'أبحاث_ورسائل',  pilClass:'p-bahth'},
+  aqd:    {label:'عقد',         folder:'عقود_واتفاقيات', pilClass:'p-aqd'},
+  other:  {label:'أخرى',        folder:'وثائق_أخرى',    pilClass:'p-idari'},
+}
+
+let docFilter='all', scanDone=false, scanTimer=null
+let localDocs=[], localStudents=[]
+
+// Navigation
+function navigate(page){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.querySelector(`[data-page="${page}"]`)?.classList.add('active')
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.getElementById(`page-${page}`)?.classList.add('active')
+  const titles={dashboard:'لوحة التحكم',scan:'المسح الضوئي والأرشفة الذكية',archive:'الأرشيف الكامل',students:'ملفات الطلاب',users:'إدارة المستخدمين',reports:'التقارير',settings:'الإعدادات'}
+  document.getElementById('topbar-title').textContent=titles[page]||page
+  if(page==='dashboard') loadDashboard()
+  if(page==='archive')   loadArchive()
+  if(page==='students')  loadStudents()
+  if(page==='users')     loadUsers()
+  if(page==='reports')   loadReports()
+}
+
+document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
+  el.addEventListener('click',()=>navigate(el.dataset.page))
+})
+
+// Load dashboard
+async function loadDashboard(){
+  try{
+    const stats=await window.api?.db.getStats()||{totalDocs:localDocs.length,totalPages:localDocs.reduce((a,d)=>a+(d.pages||1),0),totalStudents:localStudents.length,pendingOcr:0}
+    document.getElementById('s-total').textContent=stats.totalDocs||0
+    document.getElementById('s-pages').textContent=(stats.totalPages||0).toLocaleString()
+    document.getElementById('s-students').textContent=stats.totalStudents||0
+    document.getElementById('s-pending').textContent=stats.pendingOcr||0
+    document.getElementById('nb-archive').textContent=stats.totalDocs||0
+
+    const docs=await window.api?.db.getDocs({})||localDocs
+    renderRecentDocs(docs.slice(0,8))
+  } catch(e){
+    renderRecentDocs(localDocs.slice(0,8))
+  }
+}
+
+function renderRecentDocs(docs){
+  const tb=document.getElementById('recent-tbody')
+  if(!docs.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق بعد</td></tr>';return}
+  tb.innerHTML=docs.map(d=>{
+    const dt=docTypes[d.doc_type]||docTypes.other
+    return`<tr>
+      <td>${d.name}</td>
+      <td><span class="pill ${dt.pilClass}">${dt.label}</span></td>
+      <td>${d.linked_name||'—'}</td>
+      <td>${d.pages||1}</td>
+      <td>${(d.scan_date||'').slice(0,10)}</td>
+    </tr>`
+  }).join('')
+}
+
+// Archive
+async function loadArchive(q=''){
+  try{
+    const docs=await window.api?.db.getDocs({type:docFilter,search:q})||localDocs.filter(d=>docFilter==='all'||d.doc_type===docFilter)
+    renderArchive(docs)
+  }catch(e){renderArchive(localDocs)}
+}
+
+function renderArchive(docs){
+  const tb=document.getElementById('archive-tbody')
+  if(!docs.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا توجد وثائق</td></tr>';return}
+  tb.innerHTML=docs.map(d=>{
+    const dt=docTypes[d.doc_type]||docTypes.other
+    const folderShort=d.folder_path?(d.folder_path.split(/[\\/]/).slice(-2).join('/')):dt.folder
+    return`<tr>
+      <td title="${d.name}">${d.name}</td>
+      <td><span class="pill ${dt.pilClass}">${dt.label}</span></td>
+      <td style="font-size:10px;color:#888">${folderShort}</td>
+      <td>${d.linked_name||'—'}</td>
+      <td>${d.pages||1}</td>
+      <td>${(d.scan_date||'').slice(0,10)}</td>
+    </tr>`
+  }).join('')
+}
+
+function setFilter(f,el){
+  docFilter=f
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'))
+  el.classList.add('on')
+  loadArchive()
+}
+
+// Students
+async function loadStudents(q=''){
+  try{
+    const students=await window.api?.db.getStudents(q)||localStudents
+    const tb=document.getElementById('students-tbody')
+    if(!students.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد طلاب</td></tr>';return}
+    tb.innerHTML=students.map(s=>`<tr>
+      <td>${s.student_code||'—'}</td>
+      <td>${s.full_name}</td>
+      <td>${s.department||'—'}</td>
+      <td>${s.academic_year||'—'}</td>
+      <td>${s.gpa?Number(s.gpa).toFixed(2):'—'}</td>
+      <td>${s.doc_count||0} وثيقة</td>
+    </tr>`).join('')
+  }catch(e){}
+}
+
+// Users
+async function loadUsers(){
+  try{
+    const users=await window.api?.db.getUsers()||[]
+    const roleMap={dean:'👑 العميد',admin:'🖥 إداري',faculty:'🎓 تدريس',student:'📚 طالب',readonly:'👁 قراءة'}
+    const tb=document.getElementById('users-tbody')
+    if(!users.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa">لا يوجد مستخدمون</td></tr>';return}
+    tb.innerHTML=users.map(u=>`<tr>
+      <td>${u.full_name}</td>
+      <td style="color:#888">@${u.username}</td>
+      <td>${roleMap[u.role]||u.role}</td>
+      <td>${u.department||'—'}</td>
+      <td><span class="pill ${u.status==='active'?'p-done':'p-aqd'}">${u.status==='active'?'نشط':'موقوف'}</span></td>
+      <td style="font-size:11px;color:#888">${u.last_login?u.last_login.slice(0,16):'لم يسجل بعد'}</td>
+    </tr>`).join('')
+  }catch(e){}
+}
+
+// Reports
+async function loadReports(){
+  try{
+    const stats=await window.api?.db.getStats()||{}
+    document.getElementById('r-total').textContent=stats.totalDocs||localDocs.length
+    document.getElementById('r-pages').textContent=(stats.totalPages||0).toLocaleString()
+    document.getElementById('r-students').textContent=stats.totalStudents||0
+    document.getElementById('r-month').textContent=stats.todayDocs||0
+
+    const chart=document.getElementById('reports-chart')
+    const byType=stats.byType||[]
+    if(!byType.length){chart.innerHTML='<div style="text-align:center;padding:20px;color:#aaa">لا توجد بيانات كافية</div>';return}
+    const max=Math.max(...byType.map(t=>t.cnt||0))||1
+    chart.innerHTML=byType.map(t=>{
+      const dt=docTypes[t.doc_type]||docTypes.other
+      const w=Math.round(((t.cnt||0)/max)*100)
+      return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:120px;text-align:right;font-size:12px">${dt.label}</div>
+        <div style="flex:1;height:16px;background:#f0f0e8;border-radius:4px;overflow:hidden">
+          <div style="width:${w}%;height:100%;background:#16213e;border-radius:4px;transition:width .6s"></div>
+        </div>
+        <div style="width:30px;font-size:12px;font-weight:600">${t.cnt||0}</div>
+      </div>`
+    }).join('')
+  }catch(e){}
+}
+
+// Scanner
+let scanPages=0, totalPages=0
+function startScan(){
+  if(scanDone) return
+  const beam=document.getElementById('scan-beam')
+  const icon=document.getElementById('scan-icon')
+  const text=document.getElementById('scan-text')
+  const area=document.getElementById('scan-area')
+  totalPages=Math.floor(Math.random()*5)+2
+  scanPages=0
+  area.classList.add('scanning')
+  beam.style.display='block'
+  icon.textContent='📃'
+  text.textContent='جاري المسح...'
+  setStep(1,'active','⚙')
+  let pct=0
+  clearInterval(scanTimer)
+  scanTimer=setInterval(()=>{
+    scanPages++
+    pct=Math.round((scanPages/totalPages)*100)
+    document.getElementById('prog-fill').style.width=pct+'%'
+    document.getElementById('prog-label').textContent=`${scanPages} / ${totalPages} صفحات`
+    if(scanPages>=totalPages){
+      clearInterval(scanTimer)
+      beam.style.display='none'
+      icon.textContent='✅'
+      text.textContent=`تم مسح ${totalPages} صفحات`
+      area.classList.remove('scanning')
+      setStep(1,'done','✓',totalPages+' صفحات')
+      setTimeout(runOCR,400)
+    }
+  },400)
+}
+
+function runOCR(){
+  setStep(2,'active','⚙')
+  const samples=[
+    'كلية الصيدلة — جامعة البصرة\nكشف الدرجات الفصلي\nاسم الطالب: أحمد محمد الحسن\nالرقم: 2022-PH-045\nالمعدل: 3.85 / 4.00',
+    'استمارة القبول والتسجيل\nالاسم: نورة سالم الزهراني\nالرقم: 2023-PH-018\nالتخصص: صيدلة سريرية',
+    'محضر اجتماع مجلس الكلية\nرقم: 15/2024\nالتاريخ: 2024-10-08\nرئاسة: عميد الكلية',
+    'رسالة ماجستير\nعنوان: دراسة فاعلية الأدوية\nالباحث: فهد عبدالله القحطاني',
+    'عقد توريد مستلزمات مختبرية\nرقم العقد: SUP-2024-118\nالطرف الثاني: شركة بيت الدواء',
+  ]
+  const ocrText=samples[Math.floor(Math.random()*samples.length)]
+  let idx=0
+  const box=document.getElementById('ocr-text-box')
+  box.textContent=''
+  const t=setInterval(()=>{
+    if(idx>=ocrText.length){
+      clearInterval(t)
+      setStep(2,'done','✓','98.4% دقة')
+      setTimeout(()=>classifyDoc(ocrText),300)
+      return
+    }
+    box.textContent+=ocrText[idx++]
+  },18)
+}
+
+function classifyDoc(text){
+  const steps=[
+    {delay:0,   fn:()=>setStep(3,'active','⚙')},
+    {delay:600, fn:()=>{
+      const t=text.toLowerCase()
+      let type='other'
+      if(t.includes('درجات')||t.includes('معدل')||t.includes('كشف')) type='shahada'
+      else if(t.includes('قبول')||t.includes('تسجيل')||t.includes('استمارة')) type='qaboul'
+      else if(t.includes('محضر')||t.includes('قرار')||t.includes('مجلس')) type='idari'
+      else if(t.includes('رسالة')||t.includes('بحث')||t.includes('أطروحة')) type='bahth'
+      else if(t.includes('عقد')||t.includes('توريد')) type='aqd'
+      if(!document.getElementById('doc-type-select').value)
+        document.getElementById('doc-type-select').value=type
+      setStep(3,'done','✓',docTypes[type]?.label||'أخرى')
+    }},
+    {delay:700, fn:()=>setStep(4,'active','⚙')},
+    {delay:1300,fn:()=>{
+      const nameMatch=text.match(/(?:اسم الطالب|الاسم|الباحث|الطرف الثاني)[:\s]+([^\n]{3,30})/)
+      const name=nameMatch?nameMatch[1].trim():''
+      if(name&&!document.getElementById('link-name').value)
+        document.getElementById('link-name').value=name
+      setStep(4,'done','✓',name||'غير محدد')
+    }},
+    {delay:1400,fn:()=>setStep(5,'active','⚙')},
+    {delay:1800,fn:()=>{
+      setStep(5,'done','✓','جاهز للحفظ')
+      scanDone=true
+      document.getElementById('save-btn').disabled=false
+      showToast('✓ اكتملت القراءة — اضغط "حفظ وأرشفة"')
+    }},
+  ]
+  steps.forEach(s=>setTimeout(s.fn,s.delay))
+}
+
+async function saveDoc(){
+  if(!scanDone) return
+  const type=document.getElementById('doc-type-select').value||'other'
+  const name=document.getElementById('link-name').value||''
+  const dt=docTypes[type]||docTypes.other
+  const today=new Date().toISOString().split('T')[0]
+  const archivePath=`C:\\PharmacyArchive\\${dt.folder}`
+  const fileName=`${dt.label.replace('/','_')}__${name||'وثيقة'}__${today}.pdf`
+
+  const docData={
+    name:`${dt.label} — ${name||'وثيقة'}`,
+    doc_type:type,
+    folder_path:archivePath,
+    file_name:fileName,
+    file_size:0,
+    pages:totalPages,
+    ocr_text:document.getElementById('ocr-text-box').textContent,
+    linked_type:'general',
+    linked_id:null,
+    linked_name:name,
+    dpi:parseInt(document.getElementById('dpi-select').value)||300,
+    scanned_by:1,
+    status:'done'
+  }
+
+  try{
+    if(window.api) await window.api.archive.save({...docData,scannedFiles:[],personName:name,docDate:today})
+    else localDocs.unshift({...docData,scan_date:today,id:Date.now()})
+  }catch(e){ localDocs.unshift({...docData,scan_date:today,id:Date.now()}) }
+
+  document.getElementById('result-path').textContent=archivePath+'\\'+fileName
+  document.getElementById('result-success').classList.add('show')
+  document.getElementById('save-btn').disabled=true
+  showToast('✅ تمت الأرشفة في: '+dt.label)
+}
+
+function resetScan(){
+  scanDone=false; clearInterval(scanTimer)
+  document.getElementById('scan-icon').textContent='🖨'
+  document.getElementById('scan-text').textContent='اضغط لبدء المسح'
+  document.getElementById('scan-area').classList.remove('scanning')
+  document.getElementById('scan-beam').style.display='none'
+  document.getElementById('prog-fill').style.width='0%'
+  document.getElementById('prog-label').textContent='— / — صفحات'
+  document.getElementById('ocr-text-box').textContent='في انتظار المسح...'
+  document.getElementById('result-success').classList.remove('show')
+  document.getElementById('save-btn').disabled=true
+  document.getElementById('link-name').value=''
+  document.getElementById('doc-type-select').value=''
+  for(let i=1;i<=5;i++){setStep(i,'','⏸','') }
+}
+
+function setStep(n,state,icon,val=''){
+  const el=document.getElementById('cs'+n)
+  if(!el) return
+  el.className='cs-item'+(state?' '+state:'')
+  el.querySelector('.cs-icon').textContent=icon
+  document.getElementById('cv'+n).textContent=val
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast')
+  t.textContent=msg; t.classList.add('show')
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3000)
+}
+
+function exportReport(){ showToast('جاري تصدير التقرير...') }
+function saveSettings(){ showToast('تم حفظ الإعدادات') }
+function showAddUser(){ showToast('قريباً: نافذة إضافة مستخدم') }
+
+// Init scanner status
+async function initScanner(){
+  try{
+    const status=await window.api?.scanner.status()
+    const devices=await window.api?.scanner.list()||[]
+    document.getElementById('scanner-status-text').textContent=
+      devices.length?`${devices[0].name} — متصل`:'لا يوجد سكانر متصل'
+    document.getElementById('device-name').textContent=
+      devices.length?devices[0].name:'وضع تجريبي'
+    const sel=document.getElementById('device-select')
+    if(devices.length){
+      sel.innerHTML=devices.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')
+    }
+  }catch(e){
+    document.getElementById('scanner-status-text').textContent='وضع تجريبي'
+  }
+}
+
+// Menu events
+window.api?.on('menu-scan',()=>navigate('scan'))
+window.api?.on('nav',(p)=>navigate(p))
+window.api?.on('menu-backup',()=>showToast('جاري إنشاء النسخة الاحتياطية...'))
+
+// Start
+initScanner()
+loadDashboard()
+</script>
+</body>
+</html>
